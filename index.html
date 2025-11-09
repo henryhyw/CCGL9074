@@ -311,11 +311,11 @@
   <!-- 19: Credits -->
   <section class="scene panel-scene" id="scene-credits">
     <div class="graphic">
-      <div class="graph-label">Selected Sources (Illustrative)</div>
+      <div class="graph-label">Selected Sources</div>
       <div class="canvas">
         <div class="credits-viewport"><div class="credits-roll" id="credits-roll"></div></div>
       </div>
-      <div class="caption">Credits roll automatically. Replace with your bibliography.</div>
+      <div class="caption"></div>
     </div>
   </section>
 
@@ -940,9 +940,11 @@
 
     // 18) Wrap & 19) Credits
     function buildWrap(){ /* cards animate on show */ }
+    // Replace only the items[] inside buildCredits() with the 20-entry list below
     const credits={built:false,rollEl:null,viewport:null,rollH:0,viewH:0};
     function buildCredits(){
       if(credits.built) return; credits.built=true;
+
       const items=[
         "DOE Grid Deployment Office (2025). “Speed to Power Initiative.”",
         "PJM (2025). “Data Center Impacts on Load Forecast.”",
@@ -950,16 +952,63 @@
         "CBRE (1H 2025). “North American Data Center Trends.”",
         "IEA (2024). “Electricity 2024: Data centres, AI and electricity demand.”",
         "EIA (2025). “Electric Power Monthly.”",
+        "EPA (2024). “eGRID: Emissions & Generation Resource Integrated Database.”",
         "EPA (2023). “EJScreen.”",
-        "WRI (2023). “Aqueduct Water Risk Atlas.”"
+        "WRI (2023). “Aqueduct Water Risk Atlas.”",
+        "USGS (2024). “Estimated Use of Water in the United States.”",
+        "FERC (2025). “Order No. 2023 Interconnection Reforms: Implementation Updates.”",
+        "NERC (2024). “Long-Term Reliability Assessment (LTRA).”",
+        "Berkeley Lab (2024). “Queued Up: Interconnection Queue Data.”",
+        "Uptime Institute (2025). “Global Data Center Survey.”",
+        "U.S. Census Bureau (2024). “ACS 1-year Estimates (Income & Housing).”",
+        "BLS (2025). “CPI Detailed Report – Energy Price Components.”",
+        "CAISO (2025). “Transmission Plan.”",
+        "ERCOT (2024). “Long-Term System Assessment (LTSA).”",
+        "NYISO (2025). “Power Trends.”",
+        "CPUC (2024). “Integrated Resource Plan – Preferred System Plan.”"
       ];
-      const roll=select('#credits-roll'); items.forEach(txt=>{ const p=document.createElement('div'); p.className='credit'; p.textContent=txt; roll.appendChild(p);});
+
+      const roll=select('#credits-roll');
+      items.forEach(txt=>{ const p=document.createElement('div'); p.className='credit'; p.textContent=txt; roll.appendChild(p);});
       credits.rollEl=roll; credits.viewport=roll.parentElement;
-      requestAnimationFrame(()=>{ credits.rollH=roll.scrollHeight; credits.viewH=credits.viewport.clientHeight; roll.style.transform='translateY('+credits.viewH+'px)'; 
-        d3.select(roll).transition().duration(dur(30000)).ease(d3.easeLinear)
-          .styleTween('transform',()=>t=>`translateY(${lerp(credits.viewH,-(credits.rollH-credits.viewH*0.3),t)}px)`);
+
+      requestAnimationFrame(()=>{
+        credits.rollH = roll.scrollHeight;
+        credits.viewH = credits.viewport.clientHeight;
+
+        const yStart = credits.viewH;
+        const yEnd   = Math.min(0, credits.viewH - credits.rollH);
+        const travel = yStart - yEnd;
+        const pxPerSec = 60;
+        const baseMs = (travel / pxPerSec) * 1000;
+        const totalMs = dur(baseMs);
+
+        roll.style.transform = `translateY(${yStart}px)`;
+
+        d3.select(roll)
+          .transition()
+          .duration(totalMs)
+          .ease(d3.easeLinear)
+          .styleTween('transform', () => t => `translateY(${lerp(yStart, yEnd, t)}px)`)
+          .on('end', () => {
+            roll.style.transform = 'none';
+            roll.style.position  = 'relative';
+            credits.viewport.style.overflowY = 'auto';
+            credits.viewport.style.webkitOverflowScrolling = 'touch';
+            credits.viewport.scrollTop = roll.scrollHeight - credits.viewport.clientHeight;
+
+            const vp = credits.viewport;
+            const onWheel = (e) => {
+              const atTop = vp.scrollTop === 0 && e.deltaY < 0;
+              const atBottom = Math.ceil(vp.scrollTop + vp.clientHeight) >= vp.scrollHeight && e.deltaY > 0;
+              if(!atTop && !atBottom) e.stopPropagation();
+            };
+            vp.addEventListener('wheel', onWheel, {passive:true});
+            vp.addEventListener('touchmove', onWheel, {passive:true});
+          });
       });
     }
+
 
     // Scene registry
     const SCENES={
