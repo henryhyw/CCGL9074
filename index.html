@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Data Center Boom & Its Urban Impact</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  :root {
+    --bg:#0f1115;--ink:#e6e9ef;--muted:#9aa4b2;--brand:#7bdff2;--brand-2:#f7b267;--accent:#f79d65;
+    --danger:#ef5d60;--ok:#19d97b;--panel:rgba(17,18,23,.6);--border:rgba(255,255,255,.10);
+    --gridline:rgba(255,255,255,.14);--labelH:48px;--captionH:90px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-snap-type:y mandatory;height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Inter,Roboto,"Helvetica Neue",Arial;line-height:1.4}
+  a{color:var(--brand);text-decoration:none} a:hover{text-decoration:underline}
+  .hero,.scene{height:100vh;scroll-snap-align:start;position:relative;border-top:1px solid rgba(255,255,255,.06);overflow:hidden}
+  .hero{display:grid;place-items:center}
+  /* restored video bg */
+  .hero video.hero-video{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    filter:contrast(.95) brightness(.55) saturate(1.08);
+    z-index:0;
+  }
+  .hero .bg{position:absolute;inset:0;z-index:1;background:
+       radial-gradient(1200px 400px at 50% 120%, rgba(255,255,255,.06), transparent 70%),
+       linear-gradient(transparent 98%, rgba(255,255,255,.06) 99%),
+       linear-gradient(90deg, transparent 98%, rgba(255,255,255,.06) 99%);
+       background-size:100% 100%,40px 40px,40px 40px;opacity:.25;filter:blur(1px)}
+  .hero>div{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+  .hero h1{font-size:clamp(2.8rem,6vw,6rem);margin:0;letter-spacing:-.02em;text-align:center}
+  .hero p{color:var(--muted);max-width:66ch;text-align:center;margin:1rem auto 0}
+
+  .scene .graphic{position:absolute;inset:0}
+  .scene .graphic .canvas{position:absolute;inset:0}
+  .graph-label,.legend{position:absolute;top:1.2rem;background:var(--panel);border:1px solid var(--border);
+    padding:.45rem .6rem;border-radius:10px;font-size:.85rem;backdrop-filter:blur(6px);z-index:3}
+  .graph-label{left:1.2rem} .legend{right:1.2rem}
+  .caption{position:absolute;left:2rem;bottom:1.7rem;opacity:.8;font-size:.95rem;max-width:64ch;z-index:3}
+  .kicker{text-transform:uppercase;letter-spacing:.2em;color:var(--muted);font-size:.75rem;text-align:center}
+  .panel-text{position:absolute;left:50%;transform:translate(-50%,-50%);width:min(1120px,90vw);text-align:center;transition:opacity .6s ease;opacity:0;z-index:2}
+  .panel-text.show{opacity:1}
+  .panel-text h2,.panel-text h3{margin:.15rem 0 .35rem 0} .panel-text p{margin:.25rem 0 0 0;color:var(--muted)}
+  .figure-box{position:absolute;left:50%;transform:translateX(-50%);width:90%;z-index:1}
+  .table-scene .table-wrap{position:absolute;left:50%;transform:translateX(-50%);width:min(1100px,92vw);
+    background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:auto;box-shadow:0 10px 30px rgba(0,0,0,.25);backdrop-filter:blur(8px)}
+  table{width:100%;border-collapse:collapse}
+  thead th{text-align:left;font-weight:600;font-size:.9rem;color:var(--muted);padding:.9rem 1rem;border-bottom:1px solid var(--border);background:rgba(255,255,255,.03)}
+  tbody td{padding:.85rem 1rem;border-bottom:1px solid rgba(255,255,255,.06)}
+  .tooltip{position:absolute;pointer-events:none;background:rgba(17,18,23,.96);color:var(--ink);
+    border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:.45rem .6rem;font-size:.85rem;z-index:30;opacity:0;transform:translate(-50%,-140%)}
+  svg{width:100%;height:100%;display:block;background:transparent}
+  .axis-title{fill:var(--muted);font-size:14px}
+  .dotnav{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:grid;gap:10px;z-index:35}
+  .dotnav button{width:10px;height:10px;border-radius:9999px;border:none;background:#757575;opacity:.4;cursor:pointer}
+  .dotnav button:hover{opacity:.7} .dotnav button.active{background:#fff;opacity:1} .dotnav.hidden{display:none}
+  .verdict-grid{height:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-content:center}
+  .verdict-card{background:linear-gradient(180deg, rgba(20,22,28,.78), rgba(20,22,28,.6));border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;padding:1.1rem 1.2rem;box-shadow:0 10px 30px rgba(0,0,0,.25);transform:translateY(10px);opacity:0;transition:opacity .8s ease, transform .8s ease}
+  .verdict-card.show{opacity:1;transform:none}
+  .credits-viewport{position:absolute;left:50%;transform:translateX(-50%);width:min(900px,92vw);overflow:hidden;background:transparent;z-index:1}
+  .credits-roll{position:absolute;left:0;right:0;will-change:transform}
+  .credit{padding:.55rem 0;color:var(--muted);font-size:.98rem;border:none}
+</style>
+</head>
+<body>
+  <!-- Cover (video restored) -->
+  <div class="hero">
+    <!-- Put your own high-res loop in /media/cover.(webm|mp4) -->
+    <video class="hero-video" id="bgvid" autoplay muted loop playsinline poster="">
+      <source src="vid.mp4" type="video/mp4"/>
+    </video>
+    <div class="bg"></div>
+    <div>
+      <div class="kicker">Data Center Boom · Urban Impact</div>
+      <h1>Data Center Boom<br>and<br>Its Urban Impact</h1>
+      <p>Where data center power demand clusters, how it strains grids—and what it means for prices, air, water, and neighborhoods.</p>
+    </div>
+  </div>
+
+  <!-- STORY ORDER -->
+  <!-- map → siting → gap → timeline → flow → ridgelines → sankey → prices → bill bubbles → affordability hexgrid → plumes → peaker heatmap → water → chord → incentives → EJ → histogram → wrap → credits -->
+
+  <!-- 1: Map -->
+  <section class="scene panel-scene" id="scene-map">
+    <div class="graphic">
+      <div class="graph-label">US Clusters • radius ≈ IT load (MW) • <span class="muted">Illustrative</span></div>
+      <div class="canvas">
+        <div class="panel-text" id="text-map"><div class="kicker">Where is demand clustering?</div><h2>Top U.S. data center hubs</h2><p class="muted">Northern Virginia leads globally; Dallas, Phoenix, Silicon Valley, Atlanta, Columbus form the next tier.</p></div>
+        <div id="map-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Vector basemap + responsive SVG for crispness at any zoom.</div>
+    </div>
+  </section>
+
+  <!-- 2: Scatter -->
+  <section class="scene panel-scene" id="scene-scatter">
+    <div class="graphic">
+      <div class="graph-label">Available Substation Capacity (MW) vs Distance (km)</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-scatter"><div class="kicker">Siting frictions</div><h2>Capacity vs distance-to-substation</h2><p>Near substations, capacity is easier to tap; farther sites add time, upgrades, cost.</p></div>
+        <div id="scatter-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Downward slope suggests distance costs time and megawatts.</div>
+    </div>
+  </section>
+
+  <!-- 3: Gap -->
+  <section class="scene panel-scene" id="scene-money">
+    <div class="graphic">
+      <div class="graph-label">Dominion/PJM territory (illustrative) • Demand vs Grid Capacity</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-money"><div class="kicker">The gap</div><h2>AI demand outpaces grid upgrades</h2><p>IT load accelerates while bulk capacity grows linearly—creating the interconnection “gap.”</p></div>
+        <div id="money-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Shaded shortfall swells as demand streaks ahead.</div>
+    </div>
+  </section>
+
+  <!-- 4: Timeline -->
+  <section class="scene panel-scene" id="scene-timeline">
+    <div class="graphic">
+      <div class="graph-label">Schedule • Data Center vs Transmission</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-timeline"><div class="kicker">Speed to Power</div><h2>Timelines: fast halls, slow wires</h2><p>Halls: ~12–24 months; high-voltage lines: 5–10 years.</p></div>
+        <div id="timeline-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Buildings finish before big wires arrive.</div>
+    </div>
+  </section>
+
+  <!-- 5: Flow map -->
+  <section class="scene panel-scene" id="scene-flow2d">
+    <div class="graphic">
+      <div class="graph-label">Flow Map • Arcs from generators → DC hubs • Thickness ≈ relative pull</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-flow2d"><div class="kicker">Who feeds the hubs?</div><h2>Bulk power pull toward clusters</h2><p>Curved ribbons show illustrative transfers; animated markers hint at congestion paths.</p></div>
+        <div id="flow2d-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Great-circle-ish arcs; gradients and dashed motion for direction.</div>
+    </div>
+  </section>
+
+  <!-- 6: Ridgelines -->
+  <section class="scene panel-scene" id="scene-ridge">
+    <div class="graphic">
+      <div class="graph-label">Ridgeline Ribbons • Queue GW by ISO (2018–2025)</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-ridge"><div class="kicker">Structural delay</div><h2>Backlogs ridge higher by ISO</h2><p>Joyplot ridgelines show queues thickening across PJM, MISO, SPP, ERCOT, CAISO, NYISO, ISO-NE.</p></div>
+        <div id="ridge-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Each ridge = ISO; area = queued GW. Labels pinned.</div>
+    </div>
+  </section>
+
+  <!-- 7: Sankey -->
+  <section class="scene panel-scene" id="scene-sankey">
+    <div class="graphic">
+      <div class="graph-label">Alluvial • Interconnection status transitions</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-sankey"><div class="kicker">Where projects stall</div><h2>From request → studies → withdrawn/active</h2><p>Sankey reveals attrition and bottlenecks across stages.</p></div>
+        <div id="sankey-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Hover links to see MW moving between stages (illustrative).</div>
+    </div>
+  </section>
+
+  <!-- 8: Prices -->
+  <section class="scene panel-scene" id="scene-prices">
+    <div class="graphic">
+      <div class="graph-label">U.S. Residential Price (¢/kWh) • 2010–2024</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-prices"><div class="kicker">Rates & bills</div><h2>Residential electricity prices</h2><p>Flat-ish 2010s; sharper uptick after 2021 as fuels and grid investment rise.</p></div>
+        <div id="prices-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Tracer animates along the line.</div>
+    </div>
+  </section>
+
+  <!-- 9: Bill impact bubble map -->
+  <section class="scene panel-scene" id="scene-bubbles">
+    <div class="graphic">
+      <div class="graph-label">Metro Map • Bubble radius ≈ annual $ increase / household</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-bubbles"><div class="kicker">Wallet impact</div><h2>Where bills rise faster</h2><p>Crisp bubbles over a US basemap with labels.</p></div>
+        <div id="bubbles-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Hover to see metro and $/yr.</div>
+    </div>
+  </section>
+
+  <!-- 10: Affordability hex grid -->
+  <section class="scene panel-scene" id="scene-hexgrid">
+    <div class="graphic">
+      <div class="graph-label">Hex Grid • Burden = bill increase as % of median income</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-hexgrid"><div class="kicker">Fairness</div><h2>Who feels hikes most?</h2><p>Hex tiles color-coded by estimated % burden; labels show hotspots.</p></div>
+        <div id="hexgrid-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Hex tiling keeps visual density even; fully vector for sharpness.</div>
+    </div>
+  </section>
+
+  <!-- 11: Plumes -->
+  <section class="scene panel-scene" id="scene-plumes">
+    <div class="graphic">
+      <div class="graph-label">Radial Fields • Peaker emissions & EJ proximity</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-plumes"><div class="kicker">Air & equity</div><h2>Peaker reliance & nearby exposure</h2><p>Radial fades approximate relative plume; rings mark neighborhoods; label shows EJ percentile.</p></div>
+        <div id="plumes-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Soft gradients “breathe” via stroke-dash animation.</div>
+    </div>
+  </section>
+
+  <!-- 12: Heatmap -->
+  <section class="scene panel-scene" id="scene-heatmap">
+    <div class="graphic">
+      <div class="graph-label">Peaker Dispatch (hours) • Month × Hour-of-day (illustrative)</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-heatmap"><div class="kicker">Reliability vs climate</div><h2>When peakers carry the load</h2><p>Late summer afternoons stand out before wires arrive.</p></div>
+        <div id="heatmap-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Cells glow as dispatch hours increase.</div>
+    </div>
+  </section>
+
+  <!-- 13: Water -->
+  <section class="scene panel-scene" id="scene-water">
+    <div class="graphic">
+      <div class="graph-label">Baseline Water Stress by State (illustrative)</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-water"><div class="kicker">Cooling & scarcity</div><h2>Where water is tight</h2><p>Scarcity concentrates in the Southwest & Intermountain West—pushing reclaimed/dry cooling.</p></div>
+        <div id="water-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">States shaded from low (blue) to high (red).</div>
+    </div>
+  </section>
+
+  <!-- 14: Chord -->
+  <section class="scene panel-scene" id="scene-chord">
+    <div class="graphic">
+      <div class="graph-label">Chord • Generation mix → DC load share (illustrative)</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-chord"><div class="kicker">What powers AI?</div><h2>Fuel paths into DC demand</h2><p>Chord ribbons connect generation types to ISO DC share—what mix backs the boom.</p></div>
+        <div id="chord-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Hover a group to highlight its ribbons.</div>
+    </div>
+  </section>
+
+  <!-- 15: Incentives -->
+  <section class="scene table-scene" id="scene-table1">
+    <div class="graphic">
+      <div class="graph-label">Illustrative Incentives</div>
+      <div class="canvas">
+        <div class="panel-text" id="tableA-text"><div class="kicker">Who wins?</div><h3>State & county incentives for data centers</h3><p>Abatements/exemptions reduce up-front costs; locals trade near-term tax for jobs & base growth.</p></div>
+        <div class="table-wrap" id="tableA-wrap">
+          <table id="table-incentives"><thead><tr><th>State/County</th><th>Incentive Type</th><th>Headline Value</th><th>Notes</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+      <div class="caption">Rows slide in sequentially.</div>
+    </div>
+  </section>
+
+  <!-- 16: EJ -->
+  <section class="scene table-scene" id="scene-table2">
+    <div class="graphic">
+      <div class="graph-label">Environmental Justice Signals</div>
+      <div class="canvas">
+        <div class="panel-text" id="tableB-text"><div class="kicker">Who pays?</div><h3>Air & income near energy assets</h3><p>Indicators for tracts adjacent to peakers or bulk substations (illustrative slice).</p></div>
+        <div class="table-wrap" id="tableB-wrap">
+          <table id="table-ej"><thead><tr><th>Area</th><th>PM2.5 (µg/m³)</th><th>Median Income</th><th>Near Plant?</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+      <div class="caption">Replace with census + AQ joins later.</div>
+    </div>
+  </section>
+
+  <!-- 17: Histogram (animated) -->
+  <section class="scene panel-scene" id="scene-hist">
+    <div class="graphic">
+      <div class="graph-label">Site Peak IT Load (MW) • Distribution</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-hist"><div class="kicker">How big are sites?</div><h2>Peak demand distribution</h2><p>Most new halls cluster 10–30 MW; hyperscale campuses string many halls—into hundreds of MW.</p></div>
+        <div id="hist-canvas" class="figure-box"></div>
+      </div>
+      <div class="caption">Animated bars with ample bottom margin to avoid label overlap.</div>
+    </div>
+  </section>
+
+  <!-- 18: Wrap -->
+  <section class="scene panel-scene" id="scene-wrap">
+    <div class="graphic">
+      <div class="graph-label">Closing</div>
+      <div class="canvas">
+        <div class="panel-text" id="text-wrap"><div class="kicker">The Verdict</div><h2>Toward a faster, fairer “Speed-to-Power”</h2><p class="muted">Capture gains while hard-wiring power, water, and equity constraints into how, where, and when we build.</p></div>
+        <div id="wrap-figure" class="figure-box">
+          <div class="verdict-grid" id="verdict-grid">
+            <div class="verdict-card" id="card-gains"><h4><span class="icon-chip"><i class="fa-solid fa-chart-line"></i></span> Gains</h4><ul><li>Capex & construction jobs</li><li>Long-term tax base</li><li>Digital spillovers</li></ul></div>
+            <div class="verdict-card" id="card-costs"><h4><span class="icon-chip"><i class="fa-solid fa-triangle-exclamation"></i></span> Costs</h4><ul><li>Upgrade delays & queues</li><li>Water in arid metros</li><li>Peaker reliance & local air</li></ul></div>
+            <div class="verdict-card" id="card-fix"><h4><span class="icon-chip"><i class="fa-solid fa-plug-circle-bolt"></i></span> Fix the bottleneck</h4><ul><li>“Speed-to-Power” fast-tracks</li><li>On-site hybrids (storage + firm)</li><li>Tax policy tied to EJ & water</li></ul></div>
+          </div>
+        </div>
+      </div>
+      <div class="caption">Balance gains with constraints—grid, water, justice.</div>
+    </div>
+  </section>
+
+  <!-- 19: Credits -->
+  <section class="scene panel-scene" id="scene-credits">
+    <div class="graphic">
+      <div class="graph-label">Selected Sources (Illustrative)</div>
+      <div class="canvas">
+        <div class="credits-viewport"><div class="credits-roll" id="credits-roll"></div></div>
+      </div>
+      <div class="caption">Credits roll automatically. Replace with your bibliography.</div>
+    </div>
+  </section>
+
+  <!-- Dot navigation -->
+  <div class="dotnav" id="dotnav"></div>
+
+  <!-- Libraries (2D only) -->
+  <script type="module">
+    // ---- Imports
+    import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+    // Sankey ESM (fixes window.d3Sankey undefined)
+    import { sankey as d3Sankey, sankeyLinkHorizontal as d3SankeyLinkHorizontal } from "https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/+esm";
+
+    // UMD topojson for simplicity
+    const topojsonScript=document.createElement('script');
+    topojsonScript.src='https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js';
+    document.head.appendChild(topojsonScript);
+    const topojsonReady=new Promise(res=>{topojsonScript.onload=res;});
+
+    // ---- Animation speed control (slower overall)
+    const SPEED=1.6; // >1 = slower animations
+    const dur = (ms)=>ms*SPEED;
+    const dly = (ms)=>ms*SPEED;
+
+    // ---- Helpers
+    const select=(s,el=document)=>el.querySelector(s);
+    const createSVG=(parent,w,h)=>d3.select(parent).append("svg").attr("viewBox",`0 0 ${w} ${h}`).attr("preserveAspectRatio","xMidYMid meet");
+    const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+    const lerp=(a,b,t)=>a+(b-a)*t;
+    const tooltipEl=document.createElement('div'); tooltipEl.className='tooltip'; document.body.appendChild(tooltipEl);
+    const showTip=(x,y,html)=>{ tooltipEl.style.opacity=1; tooltipEl.style.left=`${x}px`; tooltipEl.style.top=`${y}px`; tooltipEl.innerHTML=html; };
+    const hideTip=()=>{ tooltipEl.style.opacity=0; };
+
+    // try to autoplay video if browser blocks first attempt
+    const bgvid = document.getElementById('bgvid');
+    if(bgvid){ bgvid.addEventListener('error',()=>{}); const tryPlay=()=>bgvid.play().catch(()=>{}); document.addEventListener('click',tryPlay,{once:true}); }
+
+    // Layout per scene
+    function cssPxVar(name,fallback){ const v=getComputedStyle(document.documentElement).getPropertyValue(name)||''; const n=parseFloat(v); return Number.isFinite(n)?n:fallback; }
+    const LAYOUTS={
+      "scene-map":{textFrac:.22,gapFrac:.03,figFrac:.66,figSel:"#map-canvas",textId:"text-map"},
+      "scene-scatter":{textFrac:.20,gapFrac:.03,figFrac:.68,figSel:"#scatter-canvas",textId:"text-scatter"},
+      "scene-money":{textFrac:.22,gapFrac:.03,figFrac:.66,figSel:"#money-canvas",textId:"text-money"},
+      "scene-timeline":{textFrac:.20,gapFrac:.03,figFrac:.68,figSel:"#timeline-canvas",textId:"text-timeline"},
+      "scene-flow2d":{textFrac:.18,gapFrac:.03,figFrac:.72,figSel:"#flow2d-canvas",textId:"text-flow2d"},
+      "scene-ridge":{textFrac:.18,gapFrac:.03,figFrac:.72,figSel:"#ridge-canvas",textId:"text-ridge"},
+      "scene-sankey":{textFrac:.18,gapFrac:.03,figFrac:.72,figSel:"#sankey-canvas",textId:"text-sankey"},
+      "scene-prices":{textFrac:.20,gapFrac:.03,figFrac:.68,figSel:"#prices-canvas",textId:"text-prices"},
+      "scene-bubbles":{textFrac:.18,gapFrac:.03,figFrac:.72,figSel:"#bubbles-canvas",textId:"text-bubbles"},
+      "scene-hexgrid":{textFrac:.18,gapFrac:.03,figFrac:.72,figSel:"#hexgrid-canvas",textId:"text-hexgrid"},
+      "scene-plumes":{textFrac:.18,gapFrac:.03,figFrac:.72,figSel:"#plumes-canvas",textId:"text-plumes"},
+      "scene-heatmap":{textFrac:.20,gapFrac:.03,figFrac:.68,figSel:"#heatmap-canvas",textId:"text-heatmap"},
+      "scene-water":{textFrac:.20,gapFrac:.03,figFrac:.68,figSel:"#water-canvas",textId:"text-water"},
+      "scene-chord":{textFrac:.18,gapFrac:.03,figFrac:.72,figSel:"#chord-canvas",textId:"text-chord"},
+      "scene-table1":{textFrac:.25,gapFrac:.02,figSel:"#tableA-wrap",textId:"tableA-text",isTable:true},
+      "scene-table2":{textFrac:.25,gapFrac:.02,figSel:"#tableB-wrap",textId:"tableB-text",isTable:true},
+      "scene-hist":{textFrac:.20,gapFrac:.03,figFrac:.68,figSel:"#hist-canvas",textId:"text-hist"},
+      "scene-wrap":{textFrac:.25,gapFrac:.02,figSel:"#wrap-figure",textId:"text-wrap"},
+      "scene-credits":{credits:true}
+    };
+    function applyPanelLayout(id){
+      const cfg=LAYOUTS[id]; if(!cfg) return;
+      if(cfg.credits){
+        const labelH=cssPxVar('--labelH',48), captionH=cssPxVar('--captionH',90);
+        const avail=window.innerHeight-labelH-captionH, h=avail*.80, top=labelH+(avail-h)/2;
+        const vp=select(`#${id} .credits-viewport`); if(vp){ vp.style.height=`${h}px`; vp.style.top=`${top}px`; }
+        return;
+      }
+      const textEl=cfg.textId?select(`#${cfg.textId}`):null, figEl=cfg.figSel?select(cfg.figSel):null; if(!textEl||!figEl) return;
+      const labelH=cssPxVar('--labelH',48), captionH=cssPxVar('--captionH',90), avail=window.innerHeight-labelH-captionH;
+      const textH=avail*(cfg.textFrac??.2), gap=avail*(cfg.gapFrac??.03), figH=cfg.isTable?null:avail*(cfg.figFrac??.68);
+      textEl.style.top=`${labelH + textH/2}px`; textEl.style.width='min(1120px,90vw)';
+      figEl.style.top=`${labelH + textH + gap}px`; figEl.style.width=cfg.isTable?'min(1120px,92vw)':'90%';
+      if(!cfg.isTable && figH){ figEl.style.height=`${figH}px`; } else { figEl.style.maxHeight=`calc(100vh - ${labelH + textH + gap + captionH}px - 16px)`; }
+    }
+    const applyAllLayouts=()=>Object.keys(LAYOUTS).forEach(applyPanelLayout);
+
+    // Dot nav
+    const scenesList=[
+      {id:"scene-map",label:"Map"},{id:"scene-scatter",label:"Siting"},{id:"scene-money",label:"Gap"},{id:"scene-timeline",label:"Timeline"},
+      {id:"scene-flow2d",label:"Flows"},{id:"scene-ridge",label:"Queues"},{id:"scene-sankey",label:"Stages"},
+      {id:"scene-prices",label:"Prices"},{id:"scene-bubbles",label:"Bills"},{id:"scene-hexgrid",label:"Afford"},
+      {id:"scene-plumes",label:"Plumes"},{id:"scene-heatmap",label:"Peaker hrs"},{id:"scene-water",label:"Water"},
+      {id:"scene-chord",label:"Fuel→DC"},{id:"scene-table1",label:"Incentives"},{id:"scene-table2",label:"EJ"},
+      {id:"scene-hist",label:"Peaks"},{id:"scene-wrap",label:"Wrap"},{id:"scene-credits",label:"Citations"}
+    ];
+    const dotnav=select('#dotnav');
+    scenesList.forEach(s=>{const b=document.createElement('button'); b.title=s.label; b.addEventListener('click',()=>document.getElementById(s.id).scrollIntoView({behavior:'smooth'})); dotnav.appendChild(b);});
+    const updateDotNav=()=>{ const buttons=[...dotnav.children], mid=window.innerHeight*0.5;
+      const idx=scenesList.findIndex(s=>{ const r=document.getElementById(s.id).getBoundingClientRect(); return r.top<mid && r.bottom>mid;});
+      buttons.forEach((b,i)=>b.classList.toggle('active',i===idx));
+      const heroRect=select('.hero')?.getBoundingClientRect(), credRect=select('#scene-credits')?.getBoundingClientRect();
+      const hide=(heroRect && heroRect.top<mid && heroRect.bottom>mid) || (credRect && credRect.top<mid && credRect.bottom>mid);
+      dotnav.classList.toggle('hidden',hide);
+    };
+    document.addEventListener('scroll',updateDotNav,{passive:true}); updateDotNav();
+
+    // ---------- Scenes ----------
+    // 1) Map
+    const map={built:false};
+    async function buildMap(){
+      if(map.built) return; map.built=true; await topojsonReady;
+      const W=1200,H=700, svg=createSVG('#map-canvas',W,H), g=svg.append('g');
+      const projection=d3.geoAlbersUsa().fitSize([W,H],{type:'Sphere'}), path=d3.geoPath(projection);
+      const topo=await fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(r=>r.json());
+      const states=window.topojson.feature(topo, topo.objects.states);
+      g.append('path').datum({type:'Sphere'}).attr('d',path).attr('fill','rgba(255,255,255,.03)');
+      g.selectAll('path.state').data(states.features).join('path')
+        .attr('d',path).attr('fill','rgba(255,255,255,.05)').attr('stroke','rgba(255,255,255,.12)').attr('stroke-width',0.6);
+
+      const clusters=[['NoVA (DC Alley)',-77.5,39.05,5000],['Dallas–Fort Worth',-97.0,32.9,2600],['Silicon Valley',-121.9,37.4,2100],
+                      ['Phoenix',-112.07,33.45,1900],['Columbus',-82.98,39.96,1600],['Atlanta',-84.39,33.75,1600],['Salt Lake City',-111.9,40.76,900],['Omaha',-95.99,41.25,700]];
+      const scale=d3.scaleSqrt().domain([0,d3.max(clusters,d=>d[3])]).range([6,58]);
+      const bubbles=g.append('g').selectAll('g.b').data(clusters).join('g').attr('class','b').attr('transform',d=>`translate(${projection([d[1],d[2]])})`);
+      bubbles.append('circle').attr('r',d=>Math.max(3,scale(d[3])*0.25)).attr('fill','rgba(123,223,242,.25)').attr('stroke','rgba(123,223,242,.9)').attr('stroke-width',1.6);
+      bubbles.append('text').attr('y',d=>-scale(d[3])*0.18-6).attr('text-anchor','middle').attr('fill','var(--ink)').attr('font-weight',600).attr('font-size',12).text(d=>d[0]);
+      bubbles.selectAll('circle').attr('r',d=>Math.max(3,scale(d[3])*0.25)).transition().duration(dur(1400)).attr('r',d=>scale(d[3]));
+      select('#text-map')?.classList.add('show');
+
+      svg.on('mousemove', (ev)=>{
+        const [mx,my]=d3.pointer(ev);
+        const hit=d3.least(clusters, d=>{
+          const p=projection([d[1],d[2]]); if(!p) return 1e9;
+          const dx=p[0]-mx, dy=p[1]-my; return Math.hypot(dx,dy)-scale(d[3]);
+        });
+        const p=projection([hit[1],hit[2]]);
+        const dist=p?Math.hypot(p[0]-mx,p[1]-my):1e9;
+        if(dist<scale(hit[3])+10) showTip(ev.pageX,ev.pageY,`<strong>${hit[0]}</strong><br/>~${hit[3].toLocaleString()} MW`); else hideTip();
+      }).on('mouseleave', hideTip);
+    }
+
+    // 2) Scatter
+    const scatter={built:false};
+    function buildScatter(){
+      if(scatter.built) return; scatter.built=true;
+      const W=1200,H=700,M={t:30,r:30,b:74,l:84},svg=createSVG('#scatter-canvas',W,H),g=svg.append('g').attr('transform',`translate(${M.l},${M.t})`);
+      const innerW=W-M.l-M.r, innerH=H-M.t-M.b;
+      const pts=d3.range(140).map(()=>{ const dist=Math.random()*120; const base=210 - dist*1.1 + d3.randomNormal(0,22)(); return {dist,cap:Math.max(0,base)};});
+      const x=d3.scaleLinear().domain([0,120]).range([0,innerW]);
+      const y=d3.scaleLinear().domain([0,260]).nice().range([innerH,0]);
+      g.append('g').attr('transform',`translate(0,${innerH})`).call(d3.axisBottom(x).ticks(8).tickSize(-innerH))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('line,path').attr('stroke','var(--gridline)'));
+      g.append('g').call(d3.axisLeft(y).ticks(6).tickSize(-innerW))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('line,path').attr('stroke','var(--gridline)'));
+      g.append('text').attr('class','axis-title').attr('x',innerW/2).attr('y',innerH+56).attr('text-anchor','middle').text('Distance to Nearest Substation (km)');
+      g.append('text').attr('class','axis-title').attr('transform',`translate(${-58},${innerH/2}) rotate(-90)`).attr('text-anchor','middle').text('Available Capacity (MW)');
+      const dots=g.append('g').selectAll('circle').data(pts).join('circle')
+        .attr('cx',d=>x(d.dist)).attr('cy',innerH).attr('r',3.2).attr('fill','rgba(123,223,242,.9)');
+      const xbar=d3.mean(pts,d=>d.dist), ybar=d3.mean(pts,d=>d.cap);
+      const slope=d3.sum(pts,d=>(d.dist-xbar)*(d.cap-ybar))/d3.sum(pts,d=>(d.dist-xbar)**2), intercept=ybar - slope*xbar;
+      const reg=d3.line().x(d=>x(d)).y(d=>y(intercept+slope*d)), domain=[0,120];
+      const regPath=g.append('path').datum(domain).attr('d',reg).attr('stroke','var(--danger)').attr('stroke-width',2.2).attr('fill','none');
+      const L=regPath.node().getTotalLength(); regPath.attr('stroke-dasharray',`${L} ${L}`).attr('stroke-dashoffset',L);
+      dots.transition().delay((_,i)=>dly(i*6)).duration(dur(700)).attr('cy',d=>y(d.cap));
+      regPath.transition().duration(dur(2200)).attr('stroke-dashoffset',0);
+      select('#text-scatter')?.classList.add('show');
+    }
+
+    // 3) Gap
+    const money={built:false};
+    function buildMoney(){
+      if(money.built) return; money.built=true;
+      const W=1200,H=700,M={t:40,r:40,b:72,l:82},svg=createSVG('#money-canvas',W,H),g=svg.append('g').attr('transform',`translate(${M.l},${M.t})`);
+      const innerW=W-M.l-M.r, innerH=H-M.t-M.b, years=d3.range(2018,2033);
+      const demandMW=[800,950,1200,1500,2000,2800,3800,5200,6800,8200,9600,11000,12500,14000,15500];
+      const capacityMW=[3000,3200,3400,3600,3800,4000,4200,4400,4700,5000,5300,5600,5900,6200,6500];
+      const demand=years.map((y,i)=>({year:y,mw:demandMW[i]})), capacity=years.map((y,i)=>({year:y,mw:capacityMW[i]}));
+      const x=d3.scaleLinear().domain(d3.extent(years)).range([0,innerW]);
+      const y=d3.scaleLinear().domain([0,Math.max(d3.max(demand,d=>d.mw),d3.max(capacity,d=>d.mw))*1.1]).nice().range([innerH,0]);
+      g.append('g').attr('transform',`translate(0,${innerH})`).call(d3.axisBottom(x).ticks(8).tickFormat(d3.format('d')).tickSize(-innerH))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('line,path').attr('stroke','var(--gridline)'));
+      g.append('g').call(d3.axisLeft(y).ticks(6).tickSize(-innerW))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('line,path').attr('stroke','var(--gridline)'));
+      g.append('text').attr('class','axis-title').attr('x',innerW/2).attr('y',innerH+56).attr('text-anchor','middle').text('Year');
+      g.append('text').attr('class','axis-title').attr('transform',`translate(${-54},${innerH/2}) rotate(-90)`).attr('text-anchor','middle').text('MW (utility territory)');
+      const line=d3.line().x(d=>x(d.year)).y(d=>y(d.mw)).curve(d3.curveMonotoneX);
+      const area=d3.area().x(d=>x(d.year)).y0(d=>y(capacity.find(c=>c.year===d.year).mw)).y1(d=>y(d.mw)).curve(d3.curveMonotoneX);
+      const gap=g.append('path').datum(demand).attr('d',area).attr('fill','rgba(239,93,96,0.18)');
+      const p1=g.append('path').datum(demand).attr('d',line).attr('fill','none').attr('stroke','var(--danger)').attr('stroke-width',3);
+      const p2=g.append('path').datum(capacity).attr('d',line).attr('fill','none').attr('stroke','var(--brand-2)').attr('stroke-width',3);
+      [p1,p2].forEach(p=>{ const L=p.node().getTotalLength(); p.attr('stroke-dasharray',`${L} ${L}`).attr('stroke-dashoffset',L).transition().duration(dur(2200)).attr('stroke-dashoffset',0);});
+      gap.attr('opacity',0).transition().delay(dly(500)).duration(dur(1200)).attr('opacity',1);
+      select('#text-money')?.classList.add('show');
+    }
+
+    // 4) Timeline
+    const tl={built:false};
+    function buildTimeline(){
+      if(tl.built) return; tl.built=true;
+      const W=1200,H=520,M={t:30,r:40,b:70,l:90},svg=createSVG('#timeline-canvas',W,H),g=svg.append('g').attr('transform',`translate(${M.l},${M.t})`);
+      const innerW=W-M.l-M.r, innerH=H-M.t-M.b;
+      const items=[{name:'Data Center',min:12,max:24,color:'var(--ok)'},{name:'Transmission',min:60,max:120,color:'var(--danger)'}];
+      const x=d3.scaleLinear().domain([0,130]).range([0,innerW]), y=d3.scaleBand().domain(items.map(d=>d.name)).range([0,innerH]).padding(.35);
+      g.append('g').attr('transform',`translate(0,${innerH})`).call(d3.axisBottom(x).ticks(10).tickSize(-innerH))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('line,path').attr('stroke','var(--gridline)'));
+      g.append('g').call(d3.axisLeft(y).tickSize(0)).call(g=>g.selectAll('text').attr('fill','var(--muted)'));
+      g.append('text').attr('class','axis-title').attr('x',innerW/2).attr('y',innerH+54).attr('text-anchor','middle').text('Months');
+      g.append('text').attr('class','axis-title').attr('transform',`translate(${-56},${innerH/2}) rotate(-90)`).attr('text-anchor','middle').text('Project Type');
+      const bars=g.append('g').selectAll('rect').data(items).join('rect').attr('x',x(0)).attr('y',d=>y(d.name))
+        .attr('width',0).attr('height',y.bandwidth()).attr('rx',8).attr('fill',d=>d.color);
+      bars.transition().duration(dur(1600)).attr('width',d=>x(d.max)-x(0));
+      select('#text-timeline')?.classList.add('show');
+    }
+
+    // 5) Flow map
+    const flow2d={built:false};
+    async function buildFlow2D(){
+      if(flow2d.built) return; flow2d.built=true; await topojsonReady;
+      const W=1200,H=720, svg=createSVG('#flow2d-canvas',W,H), g=svg.append('g');
+      const projection=d3.geoAlbersUsa().fitSize([W,H],{type:'Sphere'}), path=d3.geoPath(projection);
+      const topo=await fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(r=>r.json());
+      const states=window.topojson.feature(topo, topo.objects.states);
+      g.append('path').datum({type:'Sphere'}).attr('d',path).attr('fill','rgba(255,255,255,.03)');
+      g.selectAll('path.state').data(states.features).join('path')
+        .attr('d',path).attr('fill','rgba(255,255,255,.05)').attr('stroke','rgba(255,255,255,.12)').attr('stroke-width',0.6);
+
+      const hubs=[{name:'NoVA',lon:-77.5,lat:39.05},{name:'Dallas',lon:-97.0,lat:32.9},{name:'Phoenix',lon:-112.07,lat:33.45},{name:'Silicon Valley',lon:-121.9,lat:37.4},{name:'Atlanta',lon:-84.39,lat:33.75},{name:'Columbus',lon:-82.98,lat:39.96}];
+      const gens=[{name:'Palo Verde',lon:-112.86,lat:33.39},{name:'Four Corners',lon:-108.48,lat:36.67},{name:'Vogtle',lon:-82.19,lat:33.14},{name:'Prairie Island',lon:-92.63,lat:44.63},{name:'La Salle',lon:-89.09,lat:41.24}];
+      const edges=[['Palo Verde','Phoenix',0.9],['Four Corners','Phoenix',0.6],['La Salle','Columbus',0.55],['Prairie Island','NoVA',0.45],['Vogtle','Atlanta',0.8],['La Salle','Dallas',0.5],['Vogtle','NoVA',0.35],['Palo Verde','Silicon Valley',0.4]];
+      const nodeByName=new Map([...hubs,...gens].map(n=>[n.name,n]));
+      const lineGen=d3.line().curve(d3.curveBundle.beta(0.8));
+      function arcPoints(a,b,curv=0.15){
+        const A=projection([a.lon,a.lat]), B=projection([b.lon,b.lat]);
+        if(!A||!B) return null;
+        const mx=(A[0]+B[0])/2, my=(A[1]+B[1])/2;
+        const dx=B[0]-A[0], dy=B[1]-A[1], nx=-dy, ny=dx;
+        const len=Math.hypot(dx,dy); const k=curv*len;
+        const C=[mx+nx/len*k, my+ny/len*k];
+        return [A,C,B];
+      }
+      const edgeG=g.append('g').attr('fill','none');
+      const arcs=edges.map(([sName,tName,mag])=>{
+        const s=nodeByName.get(sName), t=nodeByName.get(tName);
+        const pts=arcPoints(s,t,0.22); if(!pts) return null;
+        const color=d3.interpolateWarm(.15+mag*.35);
+        const pathEl=edgeG.append('path').attr('d',lineGen(pts)).attr('stroke',color).attr('stroke-width',1+mag*4).attr('stroke-opacity',.9).attr('stroke-linecap','round')
+          .attr('stroke-dasharray','4 6').attr('stroke-dashoffset',60);
+        return {pathEl,mag};
+      }).filter(Boolean);
+
+      // slower dash motion
+      d3.timer((t)=>{ arcs.forEach(a=>{ a.pathEl.attr('stroke-dashoffset',60 - (t/60)*(1+a.mag*1.5)); }); });
+
+      const nodeG=g.append('g'); 
+      nodeG.selectAll('circle.gen').data(gens).join('circle').attr('class','gen')
+        .attr('cx',d=>projection([d.lon,d.lat])?.[0]).attr('cy',d=>projection([d.lon,d.lat])?.[1]).attr('r',3.5).attr('fill','#fff');
+      nodeG.selectAll('circle.hub').data(hubs).join('circle').attr('class','hub')
+        .attr('cx',d=>projection([d.lon,d.lat])?.[0]).attr('cy',d=>projection([d.lon,d.lat])?.[1]).attr('r',4.5).attr('fill','var(--brand)');
+      nodeG.selectAll('text.lbl').data([...hubs,...gens]).join('text').attr('class','lbl').attr('x',d=>projection([d.lon,d.lat])?.[0]+6).attr('y',d=>projection([d.lon,d.lat])?.[1]-6)
+        .attr('fill','var(--ink)').attr('font-size',11).attr('font-weight',600).text(d=>d.name);
+
+      select('#text-flow2d')?.classList.add('show');
+    }
+
+    // 6) Ridgeline
+    const ridge={built:false};
+    function buildRidge(){
+      if(ridge.built) return; ridge.built=true;
+      const W=1200,H=720,M={t:30,r:40,b:70,l:80},svg=createSVG('#ridge-canvas',W,H),g=svg.append('g').attr('transform',`translate(${M.l},${M.t})`);
+      const innerW=W-M.l-M.r, innerH=H-M.t-M.b, years=d3.range(2018,2026);
+      const byISO={
+        'PJM':[80,95,120,180,260,380,520,650],
+        'MISO':[60,70,95,140,210,300,420,520],
+        'SPP':[20,25,38,55,80,120,170,220],
+        'ERCOT':[50,65,85,130,200,280,360,450],
+        'CAISO':[35,45,60,85,120,160,210,260],
+        'NYISO':[15,18,22,30,45,70,95,120],
+        'ISO-NE':[12,15,18,24,34,48,65,82],
+      };
+      const isos=Object.keys(byISO);
+      const yBand=d3.scaleBand().domain(isos).range([0,innerH]).paddingInner(.5);
+      const x=d3.scaleLinear().domain(d3.extent(years)).range([0,innerW]);
+      const yScale=d3.scaleLinear().domain([0,d3.max(isos,k=>d3.max(byISO[k]))]).range([0,yBand.bandwidth()*0.85]);
+      g.append('g').attr('transform',`translate(0,${innerH})`).call(d3.axisBottom(x).ticks(8).tickFormat(d3.format('d')).tickSize(-innerH))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('line,path').attr('stroke','var(--gridline)'));
+      g.append('g').call(d3.axisLeft(yBand).tickSize(0)).call(g=>g.selectAll('text').attr('fill','var(--muted)'));
+      g.append('text').attr('class','axis-title').attr('x',innerW/2).attr('y',innerH+56).attr('text-anchor','middle').text('Year');
+      const area=d3.area().x((d,i)=>x(d.year)).y0(d=>yBand(d.iso)+yBand.bandwidth()).y1(d=>yBand(d.iso)+yBand.bandwidth()-yScale(d.gw)).curve(d3.curveCatmullRom.alpha(0.8));
+      const data=isos.flatMap(iso=>years.map((yr,i)=>({iso,year:yr,gw:byISO[iso][i]})));
+      const groups=d3.group(data,d=>d.iso);
+      const layer=g.append('g');
+      groups.forEach((vals,iso)=>{
+        layer.append('path').datum(vals).attr('fill',d3.interpolateCool((isos.indexOf(iso)+1)/(isos.length+1))).attr('opacity',.95)
+          .attr('d',area).attr('transform','translate(0,20)');
+      });
+      const clip=svg.append('clipPath').attr('id','rclip').append('rect').attr('x',0).attr('y',0).attr('width',0).attr('height',H);
+      layer.attr('clip-path','url(#rclip)'); clip.transition().duration(dur(2200)).attr('width',W);
+      select('#text-ridge')?.classList.add('show');
+    }
+
+    // 7) Sankey (fixed)
+    const sankeyScene={built:false};
+    async function buildSankey(){
+      if(sankeyScene.built) return; sankeyScene.built=true;
+      const W=1200,H=620, svg=createSVG('#sankey-canvas',W,H);
+      const sk=d3Sankey().nodeId(d=>d.name).nodeWidth(14).nodePadding(18).extent([[20,20],[W-20,H-20]]);
+      const nodes=[{name:'Requested'},{name:'Cluster Study'},{name:'Facilities Study'},{name:'Active'},{name:'Withdrawn'}];
+      const links=[
+        {source:'Requested',target:'Cluster Study',value:800},
+        {source:'Cluster Study',target:'Facilities Study',value:450},
+        {source:'Facilities Study',target:'Active',value:260},
+        {source:'Cluster Study',target:'Withdrawn',value:200},
+        {source:'Facilities Study',target:'Withdrawn',value:140},
+        {source:'Requested',target:'Withdrawn',value:120}
+      ];
+      const graph=sk({nodes:nodes.map(d=>({...d})),links:links.map(d=>({...d}))});
+      const color=d3.scaleOrdinal().domain(nodes.map(d=>d.name)).range(d3.schemeTableau10);
+      svg.append('g').selectAll('path').data(graph.links).join('path')
+        .attr('d',d3SankeyLinkHorizontal()).attr('fill','none').attr('stroke',d=>d3.color(color(d.target.name)).formatHex())
+        .attr('stroke-opacity',.65).attr('stroke-width',d=>Math.max(1,d.width))
+        .on('mousemove',(ev,d)=>showTip(ev.pageX,ev.pageY,`${d.source.name} → ${d.target.name}<br/><strong>${d.value} MW</strong>`))
+        .on('mouseleave',hideTip);
+      const node=svg.append('g').selectAll('g').data(graph.nodes).join('g');
+      node.append('rect').attr('x',d=>d.x0).attr('y',d=>d.y0).attr('width',d=>d.x1-d.x0).attr('height',d=>Math.max(1,d.y1-d.y0))
+        .attr('fill',d=>color(d.name)).attr('opacity',.9);
+      node.append('text').attr('x',d=>d.x0-8).attr('y',d=> (d.y0+d.y1)/2 ).attr('text-anchor','end').attr('dominant-baseline','middle')
+        .attr('fill','var(--ink)').attr('font-weight',600).text(d=>d.name);
+      select('#text-sankey')?.classList.add('show');
+    }
+
+    // 8) Prices
+    const prices={built:false};
+    function buildPrices(){
+      if(prices.built) return; prices.built=true;
+      const W=1200,H=600,M={t:40,r:40,b:70,l:80},svg=createSVG('#prices-canvas',W,H),g=svg.append('g').attr('transform',`translate(${M.l},${M.t})`);
+      const innerW=W-M.l-M.r, innerH=H-M.t-M.b, years=d3.range(2010,2025);
+      const cents={2010:11.6,2011:11.7,2012:11.9,2013:12.1,2014:12.6,2015:12.7,2016:12.6,2017:12.9,2018:12.9,2019:13.0,2020:13.2,2021:13.7,2022:15.0,2023:15.9,2024:16.4};
+      const data=years.map(y=>({year:y,val:cents[y]}));
+      const x=d3.scaleLinear().domain(d3.extent(years)).range([0,innerW]), y=d3.scaleLinear().domain([0,d3.max(Object.values(cents))*1.2]).range([innerH,0]).nice();
+      g.append('g').attr('transform',`translate(0,${innerH})`).call(d3.axisBottom(x).ticks(8).tickFormat(d3.format('d')).tickSize(-innerH))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('line,path').attr('stroke','var(--gridline)'));
+      g.append('g').call(d3.axisLeft(y).ticks(6).tickSize(-innerW))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('line,path').attr('stroke','var(--gridline)'));
+      g.append('text').attr('class','axis-title').attr('x',innerW/2).attr('y',innerH+56).attr('text-anchor','middle').text('Year');
+      g.append('text').attr('class','axis-title').attr('transform',`translate(${-50},${innerH/2}) rotate(-90)`).attr('text-anchor','middle').text('¢/kWh');
+      const line=d3.line().x(d=>x(d.year)).y(d=>y(d.val)).curve(d3.curveMonotoneX);
+      const curve=g.append('path').datum(data).attr('d',line).attr('fill','none').attr('stroke','var(--brand)').attr('stroke-width',3);
+      const L=curve.node().getTotalLength(); curve.attr('stroke-dasharray',`${L} ${L}`).attr('stroke-dashoffset',L).transition().duration(dur(2200)).attr('stroke-dashoffset',0);
+      const marker=g.append('circle').attr('r',5).attr('fill','var(--accent)').style('opacity',0);
+      const T=d3.timer((elapsed)=>{
+        const t=clamp(elapsed/dur(2600));
+        const len=L*t;
+        const p=curve.node().getPointAtLength(len);
+        marker.style('opacity',1).attr('cx',p.x).attr('cy',p.y);
+        if(t>=1) T.stop();
+      });
+      select('#text-prices')?.classList.add('show');
+    }
+
+    // 9) Bubble map
+    const bubbles={built:false};
+    async function buildBubbles(){
+      if(bubbles.built) return; bubbles.built=true; await topojsonReady;
+      const W=1200,H=720, svg=createSVG('#bubbles-canvas',W,H), g=svg.append('g');
+      const projection=d3.geoAlbersUsa().fitSize([W,H],{type:'Sphere'}), path=d3.geoPath(projection);
+      const topo=await fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(r=>r.json()), states=window.topojson.feature(topo, topo.objects.states);
+      g.append('path').datum({type:'Sphere'}).attr('d',path).attr('fill','rgba(255,255,255,.03)');
+      g.selectAll('path.state').data(states.features).join('path').attr('d',path).attr('fill','rgba(255,255,255,.05)').attr('stroke','rgba(255,255,255,.12)').attr('stroke-width',0.6);
+      const metros=[{name:'Phoenix',lon:-112.07,lat:33.45,inc:135},{name:'Dallas',lon:-97.0,lat:32.9,inc:110},{name:'NoVA',lon:-77.5,lat:39.05,inc:95},{name:'Atlanta',lon:-84.39,lat:33.75,inc:105},{name:'Columbus',lon:-82.98,lat:39.96,inc:85},{name:'Silicon Valley',lon:-121.9,lat:37.4,inc:120},{name:'SLC',lon:-111.9,lat:40.76,inc:80}];
+      const r=d3.scaleSqrt().domain([0,d3.max(metros,d=>d.inc)]).range([6,36]);
+      const nodes=g.append('g').selectAll('g.m').data(metros).join('g').attr('class','m').attr('transform',d=>`translate(${projection([d.lon,d.lat])})`);
+      nodes.append('circle').attr('r',0).attr('fill','rgba(247,178,103,.25)').attr('stroke','rgba(247,157,101,1)').attr('stroke-width',1.6)
+        .transition().duration(dur(1600)).attr('r',d=>r(d.inc));
+      nodes.append('text').attr('y',d=> -r(d.inc)-6).attr('text-anchor','middle').attr('fill','var(--ink)').attr('font-size',12).attr('font-weight',600).text(d=>`${d.name} · $${d.inc}/yr`);
+      svg.on('mousemove',(ev)=>{
+        const [mx,my]=d3.pointer(ev);
+        const hit=d3.least(metros, d=>{ const p=projection([d.lon,d.lat]); if(!p) return 1e9; return Math.hypot(p[0]-mx,p[1]-my)-r(d.inc);});
+        const p=projection([hit.lon,hit.lat]); const dist=p?Math.hypot(p[0]-mx,p[1]-my):1e9;
+        if(dist<r(hit.inc)+8) showTip(ev.pageX,ev.pageY,`<strong>${hit.name}</strong><br/>+$${hit.inc}/yr`); else hideTip();
+      }).on('mouseleave',hideTip);
+      select('#text-bubbles')?.classList.add('show');
+    }
+
+    // 10) Hex grid
+    const hexgrid={built:false};
+    async function buildHexGrid(){
+      if(hexgrid.built) return; hexgrid.built=true; await topojsonReady;
+      const W=1200,H=720, svg=createSVG('#hexgrid-canvas',W,H), g=svg.append('g');
+      const projection=d3.geoAlbersUsa().fitSize([W,H],{type:'Sphere'}), path=d3.geoPath(projection);
+      const topo=await fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(r=>r.json()), states=window.topojson.feature(topo, topo.objects.states);
+      g.append('path').datum({type:'Sphere'}).attr('d',path).attr('fill','rgba(255,255,255,.03)');
+      g.selectAll('path.state').data(states.features).join('path').attr('d',path).attr('fill','rgba(255,255,255,.04)').attr('stroke','rgba(255,255,255,.10)').attr('stroke-width',0.6);
+
+      const metros=[
+        {name:'Phoenix', lon:-112.07, lat:33.45, inc:135, income:73000},
+        {name:'Dallas', lon:-97.0, lat:32.9, inc:110, income:75000},
+        {name:'NoVA', lon:-77.5, lat:39.05, inc:95, income:130000},
+        {name:'Atlanta', lon:-84.39, lat:33.75, inc:105, income:76000},
+        {name:'Columbus', lon:-82.98, lat:39.96, inc:85, income:68000},
+        {name:'Silicon Valley', lon:-121.9, lat:37.4, inc:120, income:140000},
+        {name:'SLC', lon:-111.9, lat:40.76, inc:80, income:80000},
+      ].map(m=>({ ...m, burden: m.inc/Math.max(1,m.income) * 100 }));
+      const pts=metros.map(m=>({x:projection([m.lon,m.lat])[0], y:projection([m.lon,m.lat])[1], b:m.burden, name:m.name}));
+
+      const spacing=40, hexR=14, cols=Math.ceil(W/spacing)+2, rows=Math.ceil(H/(spacing*0.86))+2;
+      const centers=[];
+      for(let r=0;r<rows;r++){
+        const y=r*spacing*0.86; const xoff=(r%2)*spacing/2;
+        for(let c=0;c<cols;c++){ const x=c*spacing + xoff; centers.push({x,y, values:[]}); }
+      }
+      pts.forEach(p=>{
+        centers.forEach(c=>{ const d=Math.hypot(c.x-p.x, c.y-p.y); if(d<80) c.values.push(p.b); });
+      });
+      const v=d=>d.values.length? d3.mean(d.values):0;
+      const maxB=d3.max(centers, v)||1;
+      const color=d3.scaleLinear().domain([0, maxB*0.5, maxB]).range(['#20334f','#f7dda6','#ef5d60']);
+      const hexPath=(cx,cy,r)=>{
+        const a=Math.PI/3; const pts=d3.range(6).map(i=>[cx+r*Math.cos(a*i), cy+r*Math.sin(a*i)]); return d3.line()(pts)+ 'Z';
+      };
+      g.append('g').selectAll('path.hex').data(centers).join('path').attr('class','hex')
+        .attr('d',d=>hexPath(d.x,d.y,hexR)).attr('fill',d=>color(v(d))).attr('stroke','rgba(255,255,255,.06)').attr('opacity',.95);
+
+      g.append('g').selectAll('text.mlbl').data(pts).join('text').attr('class','mlbl')
+        .attr('x',d=>d.x+8).attr('y',d=>d.y-8).attr('fill','var(--ink)').attr('font-size',11).attr('font-weight',600)
+        .text(d=>`${d.name} · ${d.b.toFixed(2)}%`);
+
+      select('#text-hexgrid')?.classList.add('show');
+    }
+
+    // 11) Plumes
+    const plumes={built:false};
+    async function buildPlumes(){
+      if(plumes.built) return; plumes.built=true; await topojsonReady;
+      const W=1200,H=720, svg=createSVG('#plumes-canvas',W,H), defs=svg.append('defs'), g=svg.append('g');
+      const projection=d3.geoAlbersUsa().fitSize([W,H],{type:'Sphere'}), path=d3.geoPath(projection);
+      const topo=await fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(r=>r.json()), states=window.topojson.feature(topo, topo.objects.states);
+      g.append('path').datum({type:'Sphere'}).attr('d',path).attr('fill','rgba(255,255,255,.03)');
+      g.selectAll('path.state').data(states.features).join('path').attr('d',path).attr('fill','rgba(255,255,255,.05)').attr('stroke','rgba(255,255,255,.12)').attr('stroke-width',0.6);
+      const sites=[{name:'LA Basin Peaker',lon:-118.22,lat:34.05,ej:0.82,disp:0.9},{name:'Phoenix Peaker',lon:-112.09,lat:33.43,ej:0.68,disp:0.8},{name:'NYC Peaker',lon:-73.90,lat:40.73,ej:0.88,disp:0.85},{name:'Atlanta Peaker',lon:-84.40,lat:33.76,ej:0.74,disp:0.7}];
+      sites.forEach((s,i)=>{
+        const id=`rg${i}`; const grad=defs.append('radialGradient').attr('id',id);
+        grad.append('stop').attr('offset','0%').attr('stop-color','rgba(255,255,255,.18)');
+        grad.append('stop').attr('offset','100%').attr('stop-color','rgba(255,255,255,0)');
+        const p=projection([s.lon,s.lat]);
+        const r=40 + s.disp*60;
+        g.append('circle').attr('cx',p[0]).attr('cy',p[1]).attr('r',r).attr('fill',`url(#${id})`)
+          .attr('stroke',d3.interpolatePlasma(s.ej*.8)).attr('stroke-opacity',.5).attr('stroke-dasharray','6 8').attr('stroke-width',1.5)
+          .transition().duration(dur(2200)).attrTween('stroke-dashoffset',()=>t=>`${(1-t)*20}`);
+        g.append('text').attr('x',p[0]+r/2+6).attr('y',p[1]-r/2-6).attr('fill','var(--ink)').attr('font-size',12).attr('font-weight',600)
+          .text(`${s.name} · EJ ${Math.round(s.ej*100)}pctl`);
+      });
+      select('#text-plumes')?.classList.add('show');
+    }
+
+    // 12) Heatmap
+    const heat={built:false};
+    function buildHeat(){
+      if(heat.built) return; heat.built=true;
+      const W=1200,H=640,M={t:40,r:40,b:86,l:90},svg=createSVG('#heatmap-canvas',W,H),g=svg.append('g').attr('transform',`translate(${M.l},${M.t})`);
+      const innerW=W-M.l-M.r, innerH=H-M.t-M.b; const months=d3.range(1,13), hours=d3.range(0,24), data=[];
+      months.forEach(m=>hours.forEach(h=>{ const seasonal=(m>=6 && m<=9)?1.0:0.4; const diurnal=(h>=15 && h<=20)?1.2:0.3; const val=Math.max(0,d3.randomNormal(seasonal*diurnal*4,1)()); data.push({m,h,val}); }));
+      const x=d3.scaleBand().domain(months).range([0,innerW]).padding(0.05); const y=d3.scaleBand().domain(hours).range([0,innerH]).padding(0.05);
+      const c=d3.scaleLinear().domain([0,6]).range(['#1f2a44','#f79d65']);
+      g.append('g').attr('transform',`translate(0,${innerH})`).call(d3.axisBottom(x).tickFormat(d=>d3.timeFormat('%b')(new Date(2025,d-1,1))))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('path').attr('stroke','var(--gridline)'));
+      g.append('g').call(d3.axisLeft(y).tickValues([0,6,12,18,23]))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)'));
+      g.append('text').attr('class','axis-title').attr('x',innerW/2).attr('y',innerH+60).attr('text-anchor','middle').text('Month');
+      g.append('text').attr('class','axis-title').attr('transform',`translate(${-56},${innerH/2}) rotate(-90)`).attr('text-anchor','middle').text('Hour of Day');
+      const cells=g.selectAll('rect').data(data).join('rect').attr('x',d=>x(d.m)).attr('y',d=>y(d.h)).attr('width',x.bandwidth()).attr('height',y.bandwidth()).attr('rx',3).attr('fill',c(0));
+      cells.transition().delay((_,i)=>dly(i*3)).duration(dur(900)).attr('fill',d=>c(d.val));
+      select('#text-heatmap')?.classList.add('show');
+    }
+
+    // 13) Water
+    const water={built:false};
+    async function buildWater(){
+      if(water.built) return; water.built=true; await topojsonReady;
+
+      const W=1200,H=700;
+      const svg=createSVG('#water-canvas',W,H), g=svg.append('g');
+
+      const projection=d3.geoAlbersUsa().fitSize([W,H],{type:'Sphere'});
+      const path=d3.geoPath(projection);
+
+      const topo=await fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(r=>r.json());
+      const states=window.topojson.feature(topo, topo.objects.states);
+
+      // color scale and stress values (same data, now animated)
+      const color=d3.scaleLinear().domain([0,.5,1]).range(['#3aa0ff','#f0e68c','#e34a33']);
+      const stress={'Arizona':.9,'Nevada':.9,'Utah':.75,'New Mexico':.75,'California':.75,'Colorado':.75,
+                    'Texas':.5,'Oklahoma':.5,'Idaho':.5,'Wyoming':.5,'Oregon':.5,'Washington':.5};
+      const sval = name => (stress[name] ?? .25);
+
+      // base draw
+      const baseFill = '#1a2638';
+      const st = g.selectAll('path.state')
+        .data(states.features)
+        .join('path')
+          .attr('class','state')
+          .attr('d',path)
+          .attr('fill', baseFill) // start dark, then ramp to target color
+          .attr('stroke','rgba(255,255,255,.12)')
+          .attr('stroke-width',0.6);
+
+      // animate fill-in (staggered)
+      st.transition()
+          .delay((d,i)=>dly(24*i))
+          .duration(dur(900))
+          .attr('fill',d=>color(sval(d.properties.name)));
+
+      // titles (tooltips)
+      st.append('title').text(d=>`${d.properties.name} • stress ${(sval(d.properties.name)*100|0)}pctl`);
+
+      // subtle "breathing" dash on highest-stress states
+      const dry = states.features.filter(f => sval(f.properties.name) >= 0.75);
+      const rings = g.append('g').attr('class','dry-rings')
+        .selectAll('path')
+        .data(dry)
+        .join('path')
+          .attr('d',path)
+          .attr('fill','none')
+          .attr('stroke','#e34a33')
+          .attr('stroke-opacity',0.85)
+          .attr('stroke-width',1.8)
+          .attr('stroke-linecap','round')
+          .attr('stroke-dasharray','6 8');
+
+      // slower dash motion tied to SPEED
+      d3.timer(t => {
+        const sp = 70 * SPEED; // larger => slower
+        rings.attr('stroke-dashoffset', -(t / sp));
+      });
+
+      select('#text-water')?.classList.add('show');
+    }
+
+
+    // 14) Chord
+    const chordScene={built:false};
+    async function buildChord(){
+      if(chordScene.built) return; chordScene.built=true;
+      const W=1000,H=680, R=Math.min(W,H)/2 - 60, svg=createSVG('#chord-canvas',W,H);
+      const g=svg.append('g').attr('transform',`translate(${W/2},${H/2})`);
+      const fuels=['Gas','Coal','Nuclear','Wind','Solar'];
+      const isos=['PJM','MISO','ERCOT','CAISO','NYISO'];
+      const N=fuels.length+isos.length;
+      const idx=(name)=> fuels.includes(name)? fuels.indexOf(name) : fuels.length + isos.indexOf(name);
+      const names=[...fuels, ...isos];
+      const M=Array.from({length:N},()=>Array(N).fill(0));
+      function link(a,b,val){ M[idx(a)][idx(b)]=val; }
+      link('Gas','PJM',28); link('Gas','MISO',20); link('Gas','ERCOT',26); link('Gas','CAISO',10); link('Gas','NYISO',12);
+      link('Coal','PJM',8); link('Coal','MISO',12); link('Coal','ERCOT',6);
+      link('Nuclear','PJM',14); link('Nuclear','MISO',10); link('Nuclear','NYISO',6);
+      link('Wind','MISO',14); link('Wind','ERCOT',12); link('Wind','PJM',6); link('Wind','CAISO',4);
+      link('Solar','CAISO',18); link('Solar','ERCOT',8); link('Solar','PJM',6);
+
+      const chords=d3.chord().padAngle(0.04).sortSubgroups(d3.descending)(M);
+      const color=d3.scaleOrdinal().domain(names).range(d3.schemeTableau10.concat(d3.schemeSet2).slice(0,N));
+
+      const group=g.append('g').selectAll('g').data(chords.groups).join('g');
+      group.append('path').attr('d',d3.arc().innerRadius(R).outerRadius(R+18)).attr('fill',d=>color(names[d.index])).attr('opacity',.95);
+      group.append('text').each(d=>{d.angle=(d.startAngle+d.endAngle)/2;})
+        .attr('dy','0.35em')
+        .attr('transform',d=>`rotate(${d.angle*180/Math.PI-90}) translate(${R+24}) ${d.angle>Math.PI? 'rotate(180)':''}`)
+        .attr('text-anchor',d=>d.angle>Math.PI?'end':null).attr('fill','var(--ink)').attr('font-size',12).attr('font-weight',600)
+        .text(d=>names[d.index]);
+      g.append('g').attr('fill-opacity',0.9).selectAll('path').data(chords).join('path')
+        .attr('d',d3.ribbon().radius(R)).attr('fill',d=>color(names[d.source.index])).attr('stroke','none')
+        .on('mousemove',(ev,d)=>showTip(ev.pageX,ev.pageY,`${names[d.source.index]} → ${names[d.target.index]}: <strong>${d.source.value}</strong>`))
+        .on('mouseleave',hideTip);
+
+      svg.style('opacity',0).transition().duration(dur(1400)).style('opacity',1);
+      select('#text-chord')?.classList.add('show');
+    }
+
+    // 15) Incentives table
+    const tableA={built:false};
+    function buildTableA(){
+      if(tableA.built) return; tableA.built=true;
+      const rows=[
+        ["Virginia (Loudoun Co.)","Sales & use tax exemption on DC equipment","$300M+ lifetime (illus.)","Jobs + capex thresholds"],
+        ["Texas (Dallas Co.)","Local abatements + Freeport","$120M+ (project)","Layered local/state incentives"],
+        ["Arizona (Maricopa Co.)","Transaction privilege/use tax","$80M+","Reclaimed water partnerships"],
+        ["Ohio (Franklin Co.)","TIF/CRA + infra offsets","$90M+","Substation/road/water offsets"]
+      ];
+      const tbody=select("#table-incentives tbody");
+      rows.forEach((r,i)=>{ const tr=document.createElement('tr'); r.forEach(c=>{ const td=document.createElement('td'); td.textContent=c; tr.appendChild(td);}); tr.style.opacity=0; tr.style.transform='translateY(6px)'; tbody.appendChild(tr);
+        setTimeout(()=>{ tr.style.transition='opacity .8s ease, transform .8s ease'; tr.style.opacity=1; tr.style.transform='none';}, dly(180*i));});
+      select('#tableA-text')?.classList.add('show');
+    }
+
+    // 16) EJ table
+    const tableB={built:false};
+    function buildTableB(){
+      if(tableB.built) return; tableB.built=true;
+      const rows=[["Tract A (near peaker)","10.8","$48,200","Yes"],["Tract B (substation-adjacent)","12.4","$39,800","Yes"],["Tract C (upwind)","8.7","$62,100","No"],["Tract D (downwind)","14.1","$37,900","Yes"]];
+      const tbody=select("#table-ej tbody");
+      rows.forEach((r,i)=>{ const tr=document.createElement('tr'); r.forEach(c=>{ const td=document.createElement('td'); td.textContent=c; tr.appendChild(td);}); tr.style.opacity=0; tr.style.transform='translateY(6px)'; tbody.appendChild(tr);
+        setTimeout(()=>{ tr.style.transition='opacity .8s ease, transform .8s ease'; tr.style.opacity=1; tr.style.transform='none';}, dly(180*i));});
+      select('#tableB-text')?.classList.add('show');
+    }
+
+    // 17) Histogram (animated build)
+    const hist={built:false};
+    function buildHist(){
+      if(hist.built) return; hist.built=true;
+      const W=1200,H=600,M={t:30,r:24,b:88,l:70},svg=createSVG('#hist-canvas',W,H),g=svg.append('g').attr('transform',`translate(${M.l},${M.t})`);
+      const innerW=W-M.l-M.r, innerH=H-M.t-M.b;
+      // synth distribution
+      const base=[]; for(let i=0;i<220;i++) base.push(8+Math.abs(d3.randomNormal(8,5)())); for(let i=0;i<80;i++) base.push(25+Math.abs(d3.randomNormal(0,6)())); for(let i=0;i<30;i++) base.push(60+Math.abs(d3.randomNormal(0,15)()));
+      const x=d3.scaleLinear().domain([0, d3.max(base)*1.05]).nice().range([0,innerW]);
+      const bins=d3.bin().domain(x.domain()).thresholds(24)(base);
+      const y=d3.scaleLinear().domain([0, d3.max(bins, d=>d.length)]).nice().range([innerH, 0]);
+
+      g.append('g').attr('transform',`translate(0,${innerH})`).call(d3.axisBottom(x).ticks(12).tickSize(-innerH))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('line,path').attr('stroke','var(--gridline)'));
+      g.append('g').call(d3.axisLeft(y).ticks(6).tickSize(-innerW))
+        .call(g=>g.selectAll('text').attr('fill','var(--muted)')).call(g=>g.selectAll('line,path').attr('stroke','var(--gridline)'));
+      g.append('text').attr('class','axis-title').attr('x',innerW/2).attr('y',innerH+60).attr('text-anchor','middle').text('Peak Site Load (MW) →');
+      g.append('text').attr('class','axis-title').attr('transform',`translate(${-50},${innerH/2}) rotate(-90)`).attr('text-anchor','middle').text('Count');
+
+      const bars=g.selectAll('rect.bar').data(bins).join('rect').attr('class','bar')
+        .attr('x',d=>x(d.x0)+1).attr('y',y(0)).attr('width',d=>Math.max(0, x(d.x1)-x(d.x0)-2)).attr('height',0).attr('rx',3)
+        .attr('fill','rgba(247,178,103,.78)');
+
+      bars.transition().delay((_,i)=>dly(i*40)).duration(dur(900))
+        .attr('y',d=>y(d.length)).attr('height',d=>y(0)-y(d.length));
+
+      select('#text-hist')?.classList.add('show');
+    }
+
+    // 18) Wrap & 19) Credits
+    function buildWrap(){ /* cards animate on show */ }
+    const credits={built:false,rollEl:null,viewport:null,rollH:0,viewH:0};
+    function buildCredits(){
+      if(credits.built) return; credits.built=true;
+      const items=[
+        "DOE Grid Deployment Office (2025). “Speed to Power Initiative.”",
+        "PJM (2025). “Data Center Impacts on Load Forecast.”",
+        "Dominion Energy Virginia (2024). “Integrated Resource Plan (IRP).”",
+        "CBRE (1H 2025). “North American Data Center Trends.”",
+        "IEA (2024). “Electricity 2024: Data centres, AI and electricity demand.”",
+        "EIA (2025). “Electric Power Monthly.”",
+        "EPA (2023). “EJScreen.”",
+        "WRI (2023). “Aqueduct Water Risk Atlas.”"
+      ];
+      const roll=select('#credits-roll'); items.forEach(txt=>{ const p=document.createElement('div'); p.className='credit'; p.textContent=txt; roll.appendChild(p);});
+      credits.rollEl=roll; credits.viewport=roll.parentElement;
+      requestAnimationFrame(()=>{ credits.rollH=roll.scrollHeight; credits.viewH=credits.viewport.clientHeight; roll.style.transform='translateY('+credits.viewH+'px)'; 
+        d3.select(roll).transition().duration(dur(30000)).ease(d3.easeLinear)
+          .styleTween('transform',()=>t=>`translateY(${lerp(credits.viewH,-(credits.rollH-credits.viewH*0.3),t)}px)`);
+      });
+    }
+
+    // Scene registry
+    const SCENES={
+      "scene-map":{build:buildMap},
+      "scene-scatter":{build:buildScatter},
+      "scene-money":{build:buildMoney},
+      "scene-timeline":{build:buildTimeline},
+      "scene-flow2d":{build:buildFlow2D},
+      "scene-ridge":{build:buildRidge},
+      "scene-sankey":{build:buildSankey},
+      "scene-prices":{build:buildPrices},
+      "scene-bubbles":{build:BubblesWrapper},
+      "scene-hexgrid":{build:buildHexGrid},
+      "scene-plumes":{build:buildPlumes},
+      "scene-heatmap":{build:buildHeat},
+      "scene-water":{build:buildWater},
+      "scene-chord":{build:buildChord},
+      "scene-table1":{build:buildTableA},
+      "scene-table2":{build:buildTableB},
+      "scene-hist":{build:buildHist},
+      "scene-wrap":{build:buildWrap},
+      "scene-credits":{build:buildCredits}
+    };
+    // tiny wrapper to preserve function name change
+    function BubblesWrapper(){ return buildBubbles(); }
+
+    const SceneState={}; Object.keys(SCENES).forEach(id=>SceneState[id]={built:false,shown:false});
+    const observer=new IntersectionObserver((entries)=>{ entries.forEach(entry=>{ const id=entry.target.id; if(!SCENES[id]) return;
+      if(entry.isIntersecting && !SceneState[id].built){ SCENES[id].build(); SceneState[id].built=true;
+        const tSel=LAYOUTS[id]?.textId? '#'+LAYOUTS[id].textId : null; if(tSel) select(tSel)?.classList.add('show');
+        if(id==='scene-wrap'){ setTimeout(()=>{ ['card-gains','card-costs','card-fix'].forEach((cid,i)=>setTimeout(()=>select('#'+cid)?.classList.add('show'), dly(220+i*280)));}, 150);}
+      }
+    }); },{threshold:0.85});
+    Object.keys(SCENES).forEach(id=>observer.observe(document.getElementById(id)));
+
+    // initial layout
+    const apply=()=>{ applyAllLayouts(); updateDotNav(); };
+    window.addEventListener('load',apply);
+    window.addEventListener('resize',apply);
+  </script>
+</body>
+</html>
