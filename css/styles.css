@@ -7,7 +7,7 @@
 
   /* overlay + grid controls (per-slide override via inline style allowed) */
   --overlay-alpha:.35;
-  --grid-alpha:.06;
+  --grid-alpha:.0;
 
   /* graph typography knobs */
   --fs-graphLabel: clamp(0.7rem, 0.9vw, 1.1rem);
@@ -57,6 +57,39 @@ a:hover{text-decoration:underline}
 .graph-label{left:1.2rem}
 .legend{right:1.2rem}
 
+/* Start hidden, with a slight lift for a subtle ease-in */
+.graph-label,
+.caption{
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity var(--fx-dur, 700ms) cubic-bezier(.2,.7,.2,1),
+    transform var(--fx-dur, 700ms) cubic-bezier(.2,.7,.2,1);
+}
+
+/* When the slide text has revealed (text.js toggles .fx-on) → show them */
+.fx-on .graph-label,
+.fx-on .caption{
+  opacity: 1;
+  transform: none;
+}
+
+/* Also support graph slides that use .panel-text.show (your overlay text panel) */
+.scene:has(.panel-text.show) .graph-label,
+.scene:has(.panel-text.show) .caption{
+  opacity: 1;
+  transform: none;
+}
+
+/* Don’t show graph labels/captions on phones (match your dotnav behavior) */
+@media (max-width: 640px) {
+  .graph-label,
+  .caption{
+    display: none !important;
+  }
+}
+
+
 /* Captions */
 .caption{
   position:absolute;left:2rem;bottom:1.7rem;opacity:.8;z-index:3;max-width:64ch;
@@ -75,7 +108,7 @@ a:hover{text-decoration:underline}
 .figure-box{position:absolute;left:50%;transform:translateX(-50%);width:90%;z-index:1}
 
 /* Tables */
-.table-wrap{
+.table-cards{
   position:absolute;left:50%;transform:translateX(-50%);width:min(1100px,92vw);
   background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:auto;
   box-shadow:0 10px 30px rgba(0,0,0,.25);backdrop-filter:blur(8px)
@@ -96,7 +129,7 @@ tbody td{padding:.85rem 1rem;border-bottom:1px solid rgba(255,255,255,.06)}
 }
 
 /* SVG defaults */
-svg{width:100%;height:100%;display:block;background:transparent}
+svg{display:block;background:transparent}
 
 /* Axis + tick text scaling */
 .axis-title{ fill:var(--muted); font-size:var(--fs-axisTitle); }
@@ -144,7 +177,7 @@ svg{width:100%;height:100%;display:block;background:transparent}
 }
 
 /* Text slides */
-.text-wrap{position:absolute;inset:0;display:grid;place-items:center;z-index:2}
+.text-cards{position:absolute;inset:0;display:grid;place-items:center;z-index:2}
 .text-box{max-width:min(1120px,90vw); text-align:center}
 .text-kicker{ text-transform:uppercase; letter-spacing:.22em; color:var(--muted); font-size:.8rem; margin-bottom:.5rem; }
 .text-title{ margin:0; font-weight:800; letter-spacing:-.02em; }
@@ -258,3 +291,4 @@ svg{width:100%;height:100%;display:block;background:transparent}
 
 /* color anim is handled by JS setting style.color on reveal; ensure it can animate */
 .fx-color { transition: color 600ms cubic-bezier(.2,.7,.2,1); }
+
