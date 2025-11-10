@@ -108,6 +108,10 @@ svg{width:100%;height:100%;display:block;background:transparent}
 .figure-box svg .svg-legend text{ font-size:var(--fs-legend); }
 
 /* Dot nav */
+@media (max-width: 640px) {
+  .dotnav { display: none !important; }
+}
+
 .dotnav{
   position:fixed;right:16px;top:50%;transform:translateY(-50%);
   display:grid;gap:10px;z-index:35
