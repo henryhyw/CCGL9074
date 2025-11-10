@@ -175,3 +175,86 @@ svg{width:100%;height:100%;display:block;background:transparent}
 .credits-roll{ padding:1.2rem 1.4rem; }
 .credit{ padding:.35rem 0; }
 .credit:last-child{ border-bottom:none; }
+
+/* animated decorations: trigger when .revealed lands on the text box */
+.text-body .fx, .text-sub .fx, .text-title .fx { transition: all .6s cubic-bezier(.2,.7,.2,1); }
+
+/* underline that draws in */
+.fx-underline {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 2px no-repeat;
+}
+.revealed .fx-underline {
+  background-size: 100% 2px;
+}
+
+:root{
+  /* slide text effects timing */
+  --fx-speed-mult: 1.35;           /* little slower overall */
+  --fx-dur-base: 720ms;            /* base duration */
+  --fx-dur: calc(var(--fx-dur-base) * var(--fx-speed-mult));
+  --fx-stagger: 90ms;              /* optional: used if you stagger tokens */
+}
+
+/* generic token timing (optional but handy if you stagger via --fx-delay) */
+.fx-token{
+  animation-duration: var(--fx-dur);
+  animation-fill-mode: forwards;
+  animation-timing-function: ease;
+  animation-delay: var(--fx-delay, 0ms);
+}
+
+/* FULL-HEIGHT, MULTI-LINE HIGHLIGHT + ANIMATION */
+.fx-highlight{
+  --hl-color: color-mix(in oklab, var(--accent) 55%, transparent);
+
+  background-image: linear-gradient(var(--hl-color), var(--hl-color));
+  background-repeat: no-repeat;
+  background-size: 0% 100%;       /* ← start collapsed horizontally */
+  background-position: 0 0;       /* top-left */
+  padding: .05em .15em;
+
+  /* make background apply per wrapped line */
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+
+  /* animate the wipe */
+  animation-name: fxHighlightFill;
+  animation-duration: var(--fx-dur);
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+
+  /* gate the animation so it starts only when the slide reveals */
+  animation-play-state: paused;
+}
+
+/* when the slide is “on”, let animations run */
+.text-box.fx-on .fx-highlight,
+.text-box.fx-on .fx-token.fx-highlight{
+  animation-play-state: running;
+}
+
+@keyframes fxHighlightFill{
+  from{ background-size: 0% 100%; }
+  to  { background-size: 100% 100%; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .fx-highlight{ animation: none; background-size: 100% 100%; }
+}
+
+
+/* subtle bold “pop” */
+.fx-bold { display:inline-block; transform: scale(.98); font-weight: 800; filter: saturate(1); }
+.revealed .fx-bold { transform: scale(1); filter: saturate(1.1); }
+
+/* rise-in from below */
+.fx-rise { display:inline-block; transform: translateY(.4em); opacity: .01; }
+.revealed .fx-rise { transform: none; opacity: 1; }
+
+/* glow effect */
+.fx-glow { text-shadow: 0 0 0 rgba(123,223,242,0); }
+.revealed .fx-glow { text-shadow: 0 0 12px rgba(123,223,242,.55); }
+
+/* color anim is handled by JS setting style.color on reveal; ensure it can animate */
+.fx-color { transition: color 600ms cubic-bezier(.2,.7,.2,1); }

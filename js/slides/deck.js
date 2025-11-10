@@ -15,38 +15,57 @@ const deck = {
   themeVars: {
     '--bg': '#0f1115','--ink': '#e6e9ef','--muted': '#9aa4b2',
     '--brand':'#7bdff2','--brand-2':'#f7b267','--accent':'#f79d65','--danger':'#ef5d60','--ok':'#19d97b',
-    '--panel':'rgba(17,18,23,.6)'
+    '--panel':'rgba(17,18,23,.6)',
+
+    // --- Responsive font-size tokens used by text.js ---
+    // Title
+    '--fs-title-xs':'clamp(1.8rem,3vw,3rem)',
+    '--fs-title-sm':'clamp(2.2rem,3.8vw,3.6rem)',
+    '--fs-title-md':'clamp(2.8rem,6vw,6rem)',
+    '--fs-title-lg':'clamp(3.4rem,7vw,7rem)',
+    // Subtitle
+    '--fs-subtitle-xs':'clamp(0.9rem,1.3vw,1.1rem)',
+    '--fs-subtitle-sm':'clamp(1.0rem,1.6vw,1.25rem)',
+    '--fs-subtitle-md':'clamp(1.15rem,1.9vw,1.4rem)',
+    '--fs-subtitle-lg':'clamp(1.3rem,2.2vw,1.6rem)',
+    // Body
+    '--fs-body-xs':'clamp(0.95rem,1.2vw,1.05rem)',
+    '--fs-body-sm':'clamp(1.0rem,1.4vw,1.15rem)',
+    '--fs-body-md':'clamp(1.08rem,1.6vw,1.25rem)',
+    '--fs-body-lg':'clamp(1.2rem,1.9vw,1.35rem)'
   },
 
   // ==== Four background groups (each with its own video) ====
   mediaGroups: [
     { id:'group-1', media:{ type:'video', src:'media/vid-overview c.mp4', muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
-    // { id:'group-2', media:{ type:'video', src:'media/vid-grid c.mp4',     muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
-    { id:'group-2', media:{ type:'video', src:'media/vid-urban c.mp4', muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
+    { id:'group-2', media:{ type:'video', src:'media/vid-urban c.mp4',   muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
     { id:'group-3', media:{ type:'video', src:'media/vid-impacts c.mp4',  muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
     { id:'group-4', media:{ type:'video', src:'media/vid-future c.mp4',   muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } }
   ],
 
-  // ==== Slides (now grouped, with added text interstitials) ====
+  // ==== Slides (grouped, with added text interstitials & animated text effects) ====
   slides: [
 
     // GROUP 1 — OVERVIEW & CLUSTERS
     { id:'scene-cover', type:'text', overlayGrid:false, group:'group-1', nav:'Cover', figSel:'#cover-box',
       props:{
-        kicker:'CCGL9074 · Group 8',
-        title:'Data Center Boom<br/>and<br/>Its Urban Impact',
+        kicker:'BSDS3001 · Group C',
+        // Large cover sizing + effects
+        title:'Data Center Boom<br/>and<br/>Its **Social Impact**',
         subtitle:'Where data center power demand clusters, how it strains grids — and what it means for prices, air, water, and neighborhoods.',
         align:'center', halign:'center',
-        sizes:{ title:'clamp(2.8rem,6vw,6rem)', subtitle:'1.05rem', body:'1rem' }
+        sizes:{ title:'lg', subtitle:'md', body:'sm' }
       }
     },
 
     { id:'scene-intro-overview', type:'text', group:'group-1', nav:'What’s happening', figSel:'#intro-overview-box',
       props:{
         kicker:'Setting the stage',
-        title:'AI & cloud are driving a step-change in power demand',
-        subtitle:'Load is clustering in a handful of metros with land, fiber, and substations — pushing local grids hard.',
+        // Medium for the second page + effects
+        title:'**AI** & **cloud** are driving a ==step-change== in [rise]power demand[/rise]',
+        subtitle:'Load is __clustering__ in a handful of metros with land, fiber, and substations — pushing [c:var(--brand-2)]local grids[/c] hard.',
         align:'center', halign:'center',
+        sizes:{ title:'md', subtitle:'md', body:'md' }
       }
     },
 
@@ -65,10 +84,11 @@ const deck = {
     { id:'scene-siting-text', type:'text', group:'group-1', nav:'Siting context', figSel:'#siting-text-box',
       props:{
         kicker:'Siting friction',
-        title:'Close to substations & fiber… but not too close to neighborhoods',
+        // Small from here on + effects
+        title:'Close to [glow]substations & fiber[/glow]… but __not too close__ to neighborhoods',
         subtitle:'Permits, noise, water, and distribution capacity shape feasible parcels.',
         align:'left', halign:'center',
-        sizes:{ title:'clamp(2.2rem,4.5vw,3.6rem)', subtitle:'1.05rem' }
+        sizes:{ title:'sm', subtitle:'sm', body:'sm' }
       }
     },
 
@@ -85,10 +105,10 @@ const deck = {
     { id:'scene-intro-grid', type:'text', group:'group-2', nav:'Wires vs. halls', figSel:'#intro-grid-box',
       props:{
         kicker:'Speed to Power',
-        title:'Data halls are fast; big wires are slow',
+        title:'Data halls are **fast**; big wires are [c:#ef5d60]**slow**[/c]',
         subtitle:'Interconnection studies and transmission build times are the new critical path.',
         align:'left', halign:'center',
-        sizes:{ title:'clamp(2.2rem,4.5vw,3.6rem)', subtitle:'1.05rem' }
+        sizes:{ title:'sm', subtitle:'sm', body:'sm' }
       }
     },
 
@@ -109,11 +129,11 @@ const deck = {
     { id:'scene-intro-flows', type:'text', group:'group-2', nav:'Bulk flows', figSel:'#intro-flows-box',
       props:{
         kicker:'Who feeds the hubs?',
-        title:'Power flows bend toward clusters',
+        title:'Power flows [rise]bend toward clusters[/rise]',
         subtitle:'Interregional transfers and congestion patterns re-route electrons to load pockets.',
         align:'left', halign:'center',
-        sizes:{ title:'clamp(2.2rem,4.5vw,3.6rem)', subtitle:'1.05rem' }
-      }
+        sizes:{ title:'sm', subtitle:'sm', body:'sm' }
+      },
     },
 
     { id:'scene-flow2d', type:'flow2d', group:'group-2', nav:'Flows',
@@ -168,10 +188,10 @@ const deck = {
     { id:'scene-intro-impacts', type:'text', group:'group-3', nav:'Impacts', figSel:'#intro-impacts-box',
       props:{
         kicker:'Bills, burden, air & water',
-        title:'Urban impacts concentrate where capacity is tight',
+        title:'Urban impacts concentrate where ==capacity is tight==',
         subtitle:'Rate pressure, peaker reliance, and water stress are not evenly shared.',
         align:'left', halign:'center',
-        sizes:{ title:'clamp(2.2rem,4.5vw,3.6rem)', subtitle:'1.05rem' }
+        sizes:{ title:'sm', subtitle:'sm', body:'sm' }
       }
     },
 
@@ -234,10 +254,10 @@ const deck = {
     { id:'scene-intro-solutions', type:'text', group:'group-4', nav:'Solutions', figSel:'#intro-solutions-box',
       props:{
         kicker:'Playbook',
-        title:'Faster, fairer “Speed-to-Power”',
+        title:'[glow]Faster, fairer[/glow] “**Speed-to-Power**”',
         subtitle:'Fast-track queues, hybrid on-site options, and incentives tied to equity & water.',
         align:'left', halign:'center',
-        sizes:{ title:'clamp(2.2rem,4.5vw,3.6rem)', subtitle:'1.05rem' }
+        sizes:{ title:'sm', subtitle:'sm', body:'sm' }
       }
     },
 
