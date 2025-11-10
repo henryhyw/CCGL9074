@@ -15,6 +15,37 @@ export function applyCSSVars(vars={}){
   const root = document.documentElement;
   Object.entries(vars).forEach(([k,v])=> root.style.setProperty(k, v));
 }
+// Fade a graph root in when its scene enters view, then run `animateFinal`.
+export function globalReveal({
+  container,      // HTMLElement or selector of the figure container (e.g., sel)
+  fadeSel,        // a *D3 selection* you want to fade in (e.g., the root <g>)
+  animateFinal,   // function to run AFTER the fade completes
+  fadeMs = 700,   // fade duration
+  threshold = 0.45,
+  ease = null     // optional d3 ease fn (pass d3.easeCubicOut from the chart)
+} = {}){
+  const el = typeof container === 'string' ? document.querySelector(container) : container;
+  const target = el?.closest?.('.scene') ?? el ?? document.body;
+
+  // ensure hidden to start (so it fades to the *initial* state you’ve drawn)
+  fadeSel.style('opacity', 0);
+
+  const start = ()=>{
+    const t = fadeSel.transition().duration(fadeMs);
+    if(ease) t.ease(ease);
+    t.style('opacity', 1).on('end', animateFinal);
+  };
+
+  if ('IntersectionObserver' in window && target) {
+    const io = new IntersectionObserver((entries, obs)=>{
+      if (entries.some(e => e.isIntersecting)) { obs.disconnect(); start(); }
+    }, { threshold });
+    io.observe(target);
+  } else {
+    // fallback
+    start();
+  }
+}
 const tooltipEl=document.createElement('div');
 tooltipEl.className='tooltip';
 document.body.appendChild(tooltipEl);
@@ -27,8 +58,8 @@ export const LAYOUTS={
     const labelH=cssPxVar('--labelH',48), captionH=cssPxVar('--captionH',90);
     const avail=window.innerHeight-labelH-captionH;
     const textH=avail*textFrac, gap=avail*gapFrac, figH=avail*figFrac;
-    textEl.style.top=`${labelH + textH/2}px`; textEl.style.width='min(1120px,90vw)';
-    figEl.style.top=`${labelH + textH + gap}px`; figEl.style.width='90%'; figEl.style.height=`${figH}px`;
+    textEl.style.top=`${labelH + textH/2 + 40}px`; textEl.style.width='min(1120px,90vw)';
+    figEl.style.top=`${labelH + textH + 40 + gap}px`; figEl.style.width='90%'; figEl.style.height=`${figH}px`;
   },
   'table': (id, {textFrac=.25, gapFrac=.02, figSel, textSel}) => {
     const textEl=document.querySelector(textSel), figEl=document.querySelector(figSel);
@@ -36,8 +67,8 @@ export const LAYOUTS={
     const labelH=cssPxVar('--labelH',48), captionH=cssPxVar('--captionH',90);
     const avail=window.innerHeight-labelH-captionH;
     const textH=avail*textFrac, gap=avail*gapFrac;
-    textEl.style.top=`${labelH + textH/2}px`; textEl.style.width='min(1120px,90vw)';
-    figEl.style.top=`${labelH + textH + gap}px`; figEl.style.maxHeight=`calc(100vh - ${labelH + textH + gap + captionH}px - 16px)`;
+    textEl.style.top=`${labelH + textH/2 + 40}px`; textEl.style.width='min(1120px,90vw)';
+    figEl.style.top=`${labelH + textH + 40 + gap}px`; figEl.style.maxHeight=`calc(100vh - ${labelH + textH + gap + captionH}px - 16px)`;
   },
   'credits': (id) => {
     const labelH=cssPxVar('--labelH',48), captionH=cssPxVar('--captionH',90);

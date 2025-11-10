@@ -21,10 +21,10 @@ const deck = {
   // ==== Four background groups (each with its own video) ====
   mediaGroups: [
     { id:'group-1', media:{ type:'video', src:'media/vid-overview c.mp4', muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
-    { id:'group-2', media:{ type:'video', src:'media/vid-grid c.mp4',     muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
-    { id:'group-3', media:{ type:'video', src:'media/vid-urban c.mp4', muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
-    { id:'group-4', media:{ type:'video', src:'media/vid-impacts c.mp4',  muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
-    { id:'group-5', media:{ type:'video', src:'media/vid-future c.mp4',   muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } }
+    // { id:'group-2', media:{ type:'video', src:'media/vid-grid c.mp4',     muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
+    { id:'group-2', media:{ type:'video', src:'media/vid-urban c.mp4', muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
+    { id:'group-3', media:{ type:'video', src:'media/vid-impacts c.mp4',  muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } },
+    { id:'group-4', media:{ type:'video', src:'media/vid-future c.mp4',   muted:true, loop:true, autoplay:true, opacity:1 }, overlay:{ opacity:.50 } }
   ],
 
   // ==== Slides (now grouped, with added text interstitials) ====
@@ -47,7 +47,6 @@ const deck = {
         title:'AI & cloud are driving a step-change in power demand',
         subtitle:'Load is clustering in a handful of metros with land, fiber, and substations — pushing local grids hard.',
         align:'center', halign:'center',
-        sizes:{ title:'clamp(2.2rem,4.5vw,3.6rem)', subtitle:'1.05rem' }
       }
     },
 
@@ -68,7 +67,8 @@ const deck = {
         kicker:'Siting friction',
         title:'Close to substations & fiber… but not too close to neighborhoods',
         subtitle:'Permits, noise, water, and distribution capacity shape feasible parcels.',
-        align:'center', halign:'center'
+        align:'left', halign:'center',
+        sizes:{ title:'clamp(2.2rem,4.5vw,3.6rem)', subtitle:'1.05rem' }
       }
     },
 
@@ -87,7 +87,8 @@ const deck = {
         kicker:'Speed to Power',
         title:'Data halls are fast; big wires are slow',
         subtitle:'Interconnection studies and transmission build times are the new critical path.',
-        align:'center', halign:'center'
+        align:'left', halign:'center',
+        sizes:{ title:'clamp(2.2rem,4.5vw,3.6rem)', subtitle:'1.05rem' }
       }
     },
 
@@ -105,16 +106,17 @@ const deck = {
       props:{ items:[ {name:'Data Center',min:12,max:24,color:'var(--ok)'}, {name:'Transmission',min:60,max:120,color:'var(--danger)'} ], xMax:130, graphOpacity:1 }
     },
 
-    { id:'scene-intro-flows', type:'text', group:'group-3', nav:'Bulk flows', figSel:'#intro-flows-box',
+    { id:'scene-intro-flows', type:'text', group:'group-2', nav:'Bulk flows', figSel:'#intro-flows-box',
       props:{
         kicker:'Who feeds the hubs?',
         title:'Power flows bend toward clusters',
         subtitle:'Interregional transfers and congestion patterns re-route electrons to load pockets.',
-        align:'center', halign:'center'
+        align:'left', halign:'center',
+        sizes:{ title:'clamp(2.2rem,4.5vw,3.6rem)', subtitle:'1.05rem' }
       }
     },
 
-    { id:'scene-flow2d', type:'flow2d', group:'group-3', nav:'Flows',
+    { id:'scene-flow2d', type:'flow2d', group:'group-2', nav:'Flows',
       graphLabel:'Flow Map • Arcs from generators → DC hubs • Thickness ≈ relative pull',
       textPanel:{ id:'text-flow', html:`<div class="kicker">Who feeds the hubs?</div><h2>Bulk power pull toward clusters</h2><p>Curved ribbons show illustrative transfers; animated markers hint at congestion paths.</p>`},
       figSel:'#flow2d-canvas', caption:'Great-circle-ish arcs; gradients and dashed motion for direction.',
@@ -124,7 +126,7 @@ const deck = {
         graphOpacity:1 }
     },
 
-    { id:'scene-ridge', type:'ridge', group:'group-3', nav:'Queues',
+    { id:'scene-ridge', type:'ridge', group:'group-2', nav:'Queues',
       graphLabel:'Ridgeline Ribbons • Queue GW by ISO (2018–2025)',
       textPanel:{ id:'text-ridge', html:`<div class="kicker">Structural delay</div><h2>Backlogs ridge higher by ISO</h2><p>Joyplot ridgelines show queues thickening across PJM, MISO, SPP, ERCOT, CAISO, NYISO, ISO-NE.</p>`},
       figSel:'#ridge-canvas', caption:'Each ridge = ISO; area = queued GW. Labels pinned.',
@@ -139,7 +141,7 @@ const deck = {
         }, graphOpacity:1 }
     },
 
-    { id:'scene-sankey', type:'sankey', group:'group-3', nav:'Stages',
+    { id:'scene-sankey', type:'sankey', group:'group-2', nav:'Stages',
       graphLabel:'Alluvial • Interconnection status transitions',
       textPanel:{ id:'text-sankey', html:`<div class="kicker">Where projects stall</div><h2>From request → studies → withdrawn/active</h2><p>Sankey reveals attrition and bottlenecks across stages.</p>`},
       figSel:'#sankey-canvas', caption:'Hover links to see MW moving between stages (illustrative).',
@@ -148,7 +150,7 @@ const deck = {
         graphOpacity:1 }
     },
 
-    { id:'scene-chord', type:'chord', group:'group-3', nav:'Fuel→DC',
+    { id:'scene-chord', type:'chord', group:'group-2', nav:'Fuel→DC',
       graphLabel:'Chord • Generation mix → DC load share (illustrative)',
       textPanel:{ id:'text-chord', html:`<div class="kicker">What powers AI?</div><h2>Fuel paths into DC demand</h2><p>Chord ribbons connect generation types to ISO DC share—what mix backs the boom.</p>`},
       figSel:'#chord-canvas', caption:'Hover a group to highlight its ribbons.',
@@ -163,23 +165,24 @@ const deck = {
     },
 
     // GROUP 3 — HOUSEHOLD & NEIGHBORHOOD IMPACTS
-    { id:'scene-intro-impacts', type:'text', group:'group-4', nav:'Impacts', figSel:'#intro-impacts-box',
+    { id:'scene-intro-impacts', type:'text', group:'group-3', nav:'Impacts', figSel:'#intro-impacts-box',
       props:{
         kicker:'Bills, burden, air & water',
         title:'Urban impacts concentrate where capacity is tight',
         subtitle:'Rate pressure, peaker reliance, and water stress are not evenly shared.',
-        align:'center', halign:'center'
+        align:'left', halign:'center',
+        sizes:{ title:'clamp(2.2rem,4.5vw,3.6rem)', subtitle:'1.05rem' }
       }
     },
 
-    { id:'scene-prices', type:'prices', group:'group-4', nav:'Prices',
+    { id:'scene-prices', type:'prices', group:'group-3', nav:'Prices',
       graphLabel:'U.S. Residential Price (¢/kWh) • 2010–2024',
       textPanel:{ id:'text-prices', html:`<div class="kicker">Rates & bills</div><h2>Residential electricity prices</h2><p>Flat-ish 2010s; sharper uptick after 2021 as fuels and grid investment rise.</p>`},
       figSel:'#prices-canvas', caption:'Tracer animates along the line.',
       props:{ points: Array.from({length:15}, (_,i)=> ({x:2010+i, y:[11.6,11.7,11.9,12.1,12.6,12.7,12.6,12.9,12.9,13.0,13.2,13.7,15.0,15.9,16.4][i]})), graphOpacity:1 }
     },
 
-    { id:'scene-bubbles', type:'bubbles', group:'group-4', nav:'Bills',
+    { id:'scene-bubbles', type:'bubbles', group:'group-3', nav:'Bills',
       graphLabel:'Metro Map • Bubble radius ≈ annual $ increase / household',
       textPanel:{ id:'text-bubbles', html:`<div class="kicker">Wallet impact</div><h2>Where bills rise faster</h2><p>Crisp bubbles over a US basemap with labels.</p>`},
       figSel:'#bubbles-canvas', caption:'Hover to see metro and $/yr.',
@@ -191,7 +194,7 @@ const deck = {
         ], valueKey:'inc', labelFmt:(m)=> `${m.name} · $${m.inc}/yr`, graphOpacity:1 }
     },
 
-    { id:'scene-hexgrid', type:'hexgrid', group:'group-4', nav:'Afford',
+    { id:'scene-hexgrid', type:'hexgrid', group:'group-3', nav:'Afford',
       graphLabel:'Hex Grid • Burden = bill increase as % of median income',
       textPanel:{ id:'text-hexgrid', html:`<div class="kicker">Fairness</div><h2>Who feels hikes most?</h2><p>Hex tiles color-coded by estimated % burden; labels show hotspots.</p>`},
       figSel:'#hexgrid-canvas', caption:'Hex tiling keeps visual density even; fully vector for sharpness.',
@@ -203,7 +206,7 @@ const deck = {
         ].map(m=> ({...m, burden: m.inc/Math.max(1,m.income)*100 })), graphOpacity:1 }
     },
 
-    { id:'scene-plumes', type:'plumes', group:'group-4', nav:'Plumes',
+    { id:'scene-plumes', type:'plumes', group:'group-3', nav:'Plumes',
       graphLabel:'Radial Fields • Peaker emissions & EJ proximity',
       textPanel:{ id:'text-plumes', html:`<div class="kicker">Air & equity</div><h2>Peaker reliance & nearby exposure</h2><p>Radial fades approximate relative plume; rings mark neighborhoods; label shows EJ percentile.</p>`},
       figSel:'#plumes-canvas', caption:'Soft gradients “breathe” via stroke-dash animation.',
@@ -213,14 +216,14 @@ const deck = {
         ], graphOpacity:1 }
     },
 
-    { id:'scene-heatmap', type:'heatmap', group:'group-4', nav:'Peaker hrs',
+    { id:'scene-heatmap', type:'heatmap', group:'group-3', nav:'Peaker hrs',
       graphLabel:'Peaker Dispatch (hours) • Month × Hour-of-day (illustrative)',
       textPanel:{ id:'text-heatmap', html:`<div class="kicker">Reliability vs climate</div><h2>When peakers carry the load</h2><p>Late summer afternoons stand out before wires arrive.</p>`},
       figSel:'#heatmap-canvas', caption:'Cells glow as dispatch hours increase.',
       props:{ getVal:(m,h)=>{ const seasonal=(m>=6 && m<=9)?1.0:0.4; const diurnal=(h>=15 && h<=20)?1.2:0.3; return Math.max(0, randn(seasonal*diurnal*4,1)); }, graphOpacity:1 }
     },
 
-    { id:'scene-water', type:'water', group:'group-4', nav:'Water',
+    { id:'scene-water', type:'water', group:'group-3', nav:'Water',
       graphLabel:'Baseline Water Stress by State (illustrative)',
       textPanel:{ id:'text-water', html:`<div class="kicker">Cooling & scarcity</div><h2>Where water is tight</h2><p>Scarcity concentrates in the Southwest & Intermountain West—pushing reclaimed/dry cooling.</p>`},
       figSel:'#water-canvas', caption:'States shaded from low (blue) to high (red).',
@@ -228,16 +231,17 @@ const deck = {
     },
 
     // GROUP 4 — SOLUTIONS, POLICY & WRAP
-    { id:'scene-intro-solutions', type:'text', group:'group-5', nav:'Solutions', figSel:'#intro-solutions-box',
+    { id:'scene-intro-solutions', type:'text', group:'group-4', nav:'Solutions', figSel:'#intro-solutions-box',
       props:{
         kicker:'Playbook',
         title:'Faster, fairer “Speed-to-Power”',
         subtitle:'Fast-track queues, hybrid on-site options, and incentives tied to equity & water.',
-        align:'center', halign:'center'
+        align:'left', halign:'center',
+        sizes:{ title:'clamp(2.2rem,4.5vw,3.6rem)', subtitle:'1.05rem' }
       }
     },
 
-    { id:'scene-table1', type:'table', group:'group-5', nav:'Incentives',
+    { id:'scene-table1', type:'table', group:'group-4', nav:'Incentives',
       graphLabel:'Illustrative Incentives',
       textPanel:{ id:'tableA-text', html:`<div class="kicker">Who wins?</div><h3>State & county incentives for data centers</h3><p>Abatements/exemptions reduce up-front costs; locals trade near-term tax for jobs & base growth.</p>`},
       figSel:'#tableA-wrap', caption:'Rows slide in sequentially.',
@@ -249,7 +253,7 @@ const deck = {
         staggerMs: 180, graphOpacity:1 }
     },
 
-    { id:'scene-table2', type:'table', group:'group-5', nav:'EJ',
+    { id:'scene-table2', type:'table', group:'group-4', nav:'EJ',
       graphLabel:'Environmental Justice Signals',
       textPanel:{ id:'tableB-text', html:`<div class="kicker">Who pays?</div><h3>Air & income near energy assets</h3><p>Indicators for tracts adjacent to peakers or bulk substations (illustrative slice).</p>`},
       figSel:'#tableB-wrap', caption:'Replace with census + AQ joins later.',
@@ -261,21 +265,21 @@ const deck = {
         staggerMs: 180, graphOpacity:1 }
     },
 
-    { id:'scene-hist', type:'hist', group:'group-5', nav:'Peaks',
+    { id:'scene-hist', type:'hist', group:'group-4', nav:'Peaks',
       graphLabel:'Site Peak IT Load (MW) • Distribution',
       textPanel:{ id:'text-hist', html:`<div class="kicker">How big are sites?</div><h2>Peak demand distribution</h2><p>Most new halls cluster 10–30 MW; hyperscale campuses string many halls—into hundreds of MW.</p>`},
       figSel:'#hist-canvas', caption:'Animated bars with ample bottom margin to avoid label overlap.',
       props:{ values:(()=>{ const base=[]; for(let i=0;i<220;i++) base.push(8+Math.abs(randn(8,5))); for(let i=0;i<80;i++) base.push(25+Math.abs(randn(0,6))); for(let i=0;i<30;i++) base.push(60+Math.abs(randn(0,15))); return base; })(), graphOpacity:1 }
     },
 
-    { id:'scene-wrap', type:'wrap', group:'group-5', nav:'Wrap',
+    { id:'scene-wrap', type:'wrap', group:'group-4', nav:'Wrap',
       graphLabel:'Closing',
       textPanel:{ id:'text-wrap', html:`<div class="kicker">The Verdict</div><h2>Toward a faster, fairer “Speed-to-Power”</h2><p class="muted">Capture gains while hard-wiring power, water, and equity constraints into how, where, and when we build.</p>`},
       figSel:'#wrap-figure', caption:'Balance gains with constraints—grid, water, justice.',
       props:{ graphOpacity:1 }
     },
 
-    { id:'scene-credits', type:'credits', group:'group-5', nav:'Citations',
+    { id:'scene-credits', type:'credits', group:'group-4', nav:'Citations',
       graphLabel:'Selected Sources', figSel:'#credits-fig', caption:'',
       props:{ items:[
           "DOE Grid Deployment Office (2025). “Speed to Power Initiative.”","PJM (2025). “Data Center Impacts on Load Forecast.”","Dominion Energy Virginia (2024). “Integrated Resource Plan (IRP).”",
