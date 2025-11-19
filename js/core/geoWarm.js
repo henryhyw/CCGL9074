@@ -10,7 +10,7 @@ export function warmJSON(url) {
 }
 
 /** Warm a list. */
-export function warmMany(urls = []) {
+export function warmJsons(urls = []) {
   urls.forEach(u => {
     // Hint to browser to fetch during idle (no console warnings like preload)
     const link = document.createElement('link');

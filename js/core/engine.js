@@ -3,12 +3,30 @@ import { d3, depsReady } from '../deps.js';
 import { LAYOUTS, dur, dly, applyCSSVars, select } from './utils.js';
 import { bg } from './background.js';
 import { getChart } from '../charts/registry.js';
-import { warmMany } from '../core/geoWarm.js';
 
-warmMany([
-  'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json',
-  'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
-]);
+function buildLegacyFigures(slide){
+  const figs=[];
+  if (slide.text){
+    figs.push({
+      type:'text',
+      figSel: slide.text.figSel,
+      props: slide.text.props || {}
+    });
+  }
+  if (slide.figure){
+    figs.push(slide.figure);
+  }
+  return figs;
+}
+
+function getFigureGroups(slide){
+  const hasFigures = Array.isArray(slide.figures) && slide.figures.length;
+  const figures = hasFigures ? slide.figures : buildLegacyFigures(slide);
+  if (!hasFigures) slide.figures = figures;
+  const textFigures = figures.filter(fig => fig?.type === 'text');
+  const nonTextFigures = figures.filter(fig => fig && fig.type !== 'text');
+  return { figures, textFigures, nonTextFigures };
+}
 
 // === Scene markup (uniform for all slides) ===
 function sceneShell(slide){
@@ -26,40 +44,35 @@ function sceneShell(slide){
   const graphic = document.createElement('div'); graphic.className = 'graphic'; sec.appendChild(graphic);
   const canvas  = document.createElement('div'); canvas.className  = 'canvas';  graphic.appendChild(canvas);
 
-  // TEXT block (same component for all slides)
-  if (slide.text){
-    const tw  = document.createElement('div'); tw.className='text-cards';
-    const box = document.createElement('div'); box.className='text-box';
-    box.id = slide.text.figSel.replace('#','');
-    tw.appendChild(box);
-    canvas.appendChild(tw);
-  }
-
-  // FIGURE (chart/media)
-  if (slide.figure){
-    const type = slide.figure.type;
-
+  const { figures } = getFigureGroups(slide);
+  figures.forEach((fig)=>{
+    if (!fig?.figSel) return;
+    const type = fig.type;
     if (type === 'table'){
-      const fig = document.createElement('div'); fig.className = 'table-cards';
-      fig.id = slide.figure.figSel.replace('#','');
-      canvas.appendChild(fig);
-    } else if (type === 'credits'){
-      const fig = document.createElement('div'); fig.className='figure-box';
-      fig.id = slide.figure.figSel.replace('#','');
-      fig.innerHTML = `<div class="credits-viewport"><!-- dynamic --></div>`;
-      canvas.appendChild(fig);
-    } else if (type === 'text'){
+      const tableWrap = document.createElement('div'); tableWrap.className = 'table-cards';
+      tableWrap.id = fig.figSel.replace('#','');
+      canvas.appendChild(tableWrap);
+      return;
+    }
+    if (type === 'credits'){
+      const creditWrap = document.createElement('div'); creditWrap.className='figure-box';
+      creditWrap.id = fig.figSel.replace('#','');
+      creditWrap.innerHTML = `<div class="credits-viewport"><!-- dynamic --></div>`;
+      canvas.appendChild(creditWrap);
+      return;
+    }
+    if (type === 'text'){
       const tw  = document.createElement('div'); tw.className='text-cards';
       const box = document.createElement('div'); box.className='text-box';
-      box.id = slide.figure.figSel.replace('#','');
+      box.id = fig.figSel.replace('#','');
       tw.appendChild(box);
       canvas.appendChild(tw);
-    } else {
-      const fig = document.createElement('div'); fig.className='figure-box';
-      fig.id = slide.figure.figSel.replace('#','');
-      canvas.appendChild(fig);
+      return;
     }
-  }
+    const figBox = document.createElement('div'); figBox.className='figure-box';
+    figBox.id = fig.figSel.replace('#','');
+    canvas.appendChild(figBox);
+  });
 
   // CAPTION (below the scene)
   if (slide.caption){
@@ -72,32 +85,35 @@ function sceneShell(slide){
 
 // === Layout (replicates legacy proportions)
 function applyLayout(slide){
-  const textSel = slide.text ? slide.text.figSel : null;
-  const hAlign = slide.text?.props?.halign || 'center'; // NEW: pass halign through
+  const { textFigures, nonTextFigures } = getFigureGroups(slide);
+  const textFig = textFigures[0];
+  const textSel = textFig?.figSel || null;
+  const hAlign = textFig?.props?.halign || 'center';
+  const primaryFigure = nonTextFigures[0];
 
-  if (slide.figure?.type === 'table'){
+  if (primaryFigure?.type === 'table'){
     LAYOUTS.table(slide.id, {
-      figSel: slide.figure.figSel,
+      figSel: primaryFigure.figSel,
       textSel,
       textFrac: slide.layout?.textFrac,
       gapFrac: slide.layout?.gapFrac,
-      hAlign            // NEW
+      hAlign
     });
     return;
   }
-  if (slide.figure?.type === 'credits'){
+  if (primaryFigure?.type === 'credits'){
     LAYOUTS.credits(slide.id);
     return;
   }
 
-  if (slide.figure){
+  if (primaryFigure){
     LAYOUTS.panel(slide.id, {
-      figSel: slide.figure.figSel,
+      figSel: primaryFigure.figSel,
       textSel,
       textFrac: slide.layout?.textFrac,
       gapFrac: slide.layout?.gapFrac,
       figFrac: slide.layout?.figFrac,
-      hAlign            // NEW
+      hAlign
     });
     return;
   }
@@ -122,29 +138,32 @@ function buildSlide(slide){
     document.documentElement.style.setProperty('--grid-alpha', slide.overlayGrid ? '.06' : '0');
   }
 
-  // TEXT
-  if (slide.text){
-    const textBuilder = getChart('text');
+  const { figures, textFigures, nonTextFigures } = getFigureGroups(slide);
+
+  // Build text figures first
+  const textBuilder = getChart('text');
+  textFigures.forEach(fig=>{
     if (textBuilder){
-      textBuilder(slide.text.figSel, slide.text.props || {});
-      select(slide.text.figSel)?.classList.add('show');
+      textBuilder(fig.figSel, fig.props || {});
+      select(fig.figSel)?.classList.add('show');
     }
-  }
+  });
 
-  // FIGURE
-  if (slide.figure){
-    if (slide.figure.props?.graphOpacity != null){
-      const fig = document.querySelector(slide.figure.figSel);
-      if(fig) fig.style.opacity = slide.figure.props.graphOpacity;
+  // Build remaining figures
+  nonTextFigures.forEach(fig=>{
+    if (!fig) return;
+    if (fig.props?.graphOpacity != null){
+      const el = document.querySelector(fig.figSel);
+      if (el) el.style.opacity = fig.props.graphOpacity;
     }
-    const figBuilder = getChart(slide.figure.type);
+    const figBuilder = getChart(fig.type);
     if (figBuilder){
-      figBuilder(slide.figure.figSel, slide.figure.props || {});
+      figBuilder(fig.figSel, fig.props || {});
     }
-  }
+  });
 
-  // If there is no text on this slide, we still want label/caption to fade in.
-  if (!slide.text){
+  // If there is no text figure on this slide, we still want label/caption to fade in.
+  if (!textFigures.length){
     const sec = document.getElementById(slide.id);
     if (sec) sec.classList.add('fx-on');
   }
@@ -195,7 +214,8 @@ export async function bootstrap(deck){
         buildSlide(slide);
         st.built=true;
 
-        if(slide.text) select(slide.text.figSel)?.classList.add('show');
+        const { textFigures } = getFigureGroups(slide);
+        textFigures.forEach(fig=> select(fig.figSel)?.classList.add('show'));
       }
 
       const buttons=[...dotnav.children], idx=deck.slides.findIndex(s=>s.id===id);
