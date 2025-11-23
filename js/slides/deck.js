@@ -308,7 +308,7 @@ const deck = {
         figSel:'#what-is-dc',
         props:{
           kicker:'What is a data center?',
-          title:'A warehouse that turns __electricity__ into ==compute==',
+          title:'A warehouse that turns __electricity__ </br>into ==compute==',
           subtitle:'Hundreds of racks, nonstop power, heavy cooling (often water), and fiber routes—big campuses can drink as much water as a small city.',
           align:'center', halign:'center',
           sizes:{ title:'sm', subtitle:'sm', body:'sm' }
