@@ -129,7 +129,7 @@ export const LAYOUTS={
     const avail=window.innerHeight-labelH-captionH;
     const textH=avail*textFrac, gap=avail*gapFrac;
 
-    const padTop = 40;
+    const padTop = 56;
     const padX = Math.max(window.innerWidth*0.05, 48);
     const textMid = labelH + (textH/2) + padTop;
 
@@ -155,17 +155,32 @@ export const LAYOUTS={
     }
 
     // TABLE FIGURE — adaptive height, but never collides with caption
-    const tableTop = labelH + textH + padTop + gap;
-    const maxH = Math.max(160, window.innerHeight - tableTop - captionH - 16);
+    let tableTop = labelH + textH + padTop + gap;
+    tableTop += 16; // extra breathing room between title and table
+    const maxH = Math.max(160, window.innerHeight - tableTop - captionH - 20);
 
     figEl.style.position = 'absolute';
     figEl.style.left = '50%';
     figEl.style.transform = 'translateX(-50%)';
     figEl.style.top = `${tableTop}px`;
     figEl.style.width = 'min(1120px, 92vw)';
-    figEl.style.height = 'auto';             // key: let it size to rows
-    figEl.style.maxHeight = `${maxH}px`;     // but keep it within stage
-    figEl.style.overflow = 'auto';           // scroll if too tall
+    figEl.style.height = 'auto';             // grow with content
+    figEl.style.maxHeight = `${maxH}px`;     // but cap to viewport
+    figEl.style.overflowY = 'auto';          // scroll only when needed
+    figEl.style.overflowX = 'hidden';
+
+    // Debug logging to verify layout + scroll sizing
+    console.debug('[TABLE LAYOUT]', {
+      slideId: id,
+      textSel,
+      figSel,
+      labelH,
+      captionH,
+      textH,
+      tableTop,
+      maxH,
+      figHeight: figEl.scrollHeight
+    });
   },
 
   credits: (id) => {
@@ -176,5 +191,21 @@ export const LAYOUTS={
     const top      = labelH + Math.round((avail - h)/2);
     const vp=document.querySelector(`#${id} .credits-viewport`);
     if(vp){ vp.style.height=`${h}px`; vp.style.top=`${top}px`; }
+  },
+
+  figureOnly: (id, { figSel }) => {
+    const figEl=document.querySelector(figSel);
+    if(!figEl) return;
+    const labelH=cssPxVar('--labelH',48), captionH=cssPxVar('--captionH',90);
+    const padTop=40, padX=Math.max(window.innerWidth*0.05, 48);
+    const availH=window.innerHeight - labelH - captionH - padTop - 12;
+    figEl.style.position='absolute';
+    figEl.style.left='50%';
+    figEl.style.transform='translateX(-50%)';
+    figEl.style.top= `${labelH + padTop}px`;
+    figEl.style.width='90%';
+    figEl.style.height= `${availH}px`;
+    figEl.style.maxHeight=`${availH}px`;
+    figEl.style.overflow='hidden';
   }
 };

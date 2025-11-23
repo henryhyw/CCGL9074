@@ -22,7 +22,7 @@ export function build(sel, props){
     .call(g=>g.selectAll('text').attr('fill','var(--muted)'));
 
   g.append('text').attr('class','axis-title').attr('x',innerW/2).attr('y',innerH+54).attr('text-anchor','middle').text('Months');
-  g.append('text').attr('class','axis-title').attr('transform',`translate(${-56},${innerH/2}) rotate(-90)`).attr('text-anchor','middle').text('Project Type');
+  g.append('text').attr('class','axis-title').attr('transform',`translate(${-56},${innerH/2}) rotate(-90)`).attr('text-anchor','middle').text('');
 
   const bars=g.append('g').selectAll('rect').data(items).join('rect')
     .attr('x',x(0)).attr('y',d=>y(d.name))

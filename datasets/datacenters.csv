@@ -1,0 +1,173 @@
+name,localname,link,latitude,longitude,datacenters
+USA,America,usa,38.959409,-92.460938,4214
+Germany,Deutschland,germany,51.179343,10.50293,490
+Indonesia,Indonesia,indonesia,-2.064982,112.104492,183
+Brazil,Brasil,brazil,-14.235004,-51.92528,195
+The Netherlands,Holland,the-netherlands,52.173932,5.603027,194
+Australia,Australia,australia,-26.194877,134.296875,282
+Russia,Russia,russia,62.103883,93.867188,180
+France,Française,france,47.279229,2.548828,321
+India,India,india,20.632784,78.75,276
+Canada,Canada,canada,55.37911,-99.667969,295
+United Kingdom,UK,united-kingdom,55.378051,-3.435973,514
+Italy,Italia,italy,41.013066,11.99707,209
+Sweden,Sverige,sweden,62.835089,17.226563,103
+Poland,Polska,poland,51.919438,19.145136,94
+Ukraine,Ukrayina,ukraine,49.15297,31.201172,38
+Japan,Japan,japan,35.675147,137.021484,250
+Philippines,Repúblika ng Pilipinas,philippines,12.879721,121.774017,32
+Switzerland,Schweiz,switzerland,46.882723,8.393555,117
+Spain,España,spain,40.145289,-3.47168,199
+Finland,Suomi,finland,64.586185,26.279297,88
+Austria,Österreich,austria,47.546872,13.337402,53
+Bulgaria,Bulgaria,bulgaria,42.455888,25.202637,31
+New Zealand,New Zealand,new-zealand,-40.780541,173.408203,57
+Hong Kong,"Hong Kong, SAR of China",hong-kong,22.396428,114.109497,95
+South Africa,South Africa,south-africa,-29.152161,25.620117,58
+Mexico,United Mexican States,mexico,23.634501,-102.552784,63
+Norway,Norge,norway,65.549367,13.710938,86
+Romania,Romania,romania,45.828799,24.763184,65
+Peru,República del Perú,peru,-9.189967,-75.015152,14
+Singapore,Singapore,singapore,1.347074,103.818054,78
+China,China,china,36.879621,101.953125,381
+Thailand,Ratcha Anachak Thai,thailand,15.870032,100.992541,58
+Colombia,Colombia,colombia,3.381824,-73.300781,42
+Bangladesh,Peoples Republic of Bangladesh,bangladesh,24.12670195868167,89.912109375,15
+Greece,Hellenic Republic,greece,39.074208,21.824312,22
+Chile,República de Chile,chile,-35.675147,-71.542969,67
+Saudi Arabia,Kingdom of Saudi Arabia (KSA),saudi-arabia,23.885942,45.079162,51
+Malaysia,Malaysia,malaysia,3.908099,102.106934,119
+Taiwan,Formosa,taiwan,23.69781,120.960515,36
+Denmark,Danmark,denmark,55.714735,10.327148,69
+Tanzania,U.R.T,tanzania,-6.369028,34.888822,11
+Turkey,Türkiye,turkey,38.272689,33.046875,83
+Belgium,Belgium,belgium,50.750359,4.669189,48
+South Korea,Republic of Korea,south-korea,35.907757,127.766922,94
+Czech Republic,Czech Republic,czech-republic,49.79545,15.205078,55
+Egypt,Egypt,egypt,26.70636,30.146484,13
+Latvia,Latvija,latvia,57.016814,24.554443,25
+Kenya,Republic of Kenya,kenya,-0.023559,37.906193,20
+Nigeria,Nijeriya,nigeria,9.081999,8.675277,22
+Ireland,Éire,ireland,53.514185,-7.77832,139
+United Arab Emirates,UAE,united-arab-emirates,24.397133,53.833008,58
+Argentina,Argentine Republic,argentina,-38.416097,-63.616672,42
+Portugal,Portugal,portugal,39.825413,-8.195801,48
+Serbia,Republic of Serbia,serbia,44.195859,20.544434,13
+Slovakia,Slovak Republic,slovakia,48.821333,19.731445,13
+DR Congo,Democratic Republic of the Congo,dr-congo,-4.051307199784181,24.169921875,4
+Lithuania,Republic of Lithuania,lithuania,55.247815,23.708496,19
+Costa Rica,Republic of Costa Rica,costa-rica,9.750926,-83.803711,12
+Kazakhstan,,kazakhstan,48.019573,66.92368399999998,13
+Macedonia,Republic of Macedonia,macedonia,41.608635,21.745275,7
+Uzbekistan,Republic of Uzbekistan,uzbekistan,41.377491,64.585262,6
+Guatemala,Republic of Guatemala,guatemala,15.783471,-90.23075899999998,7
+Estonia,Eesti Vabariik,estonia,58.595272,25.013607,12
+Puerto Rico,Puerto Rico,puerto-rico,18.177169,-66.489258,8
+Bolivia,Bolivia,bolivia,-16.290154,-63.588653,5
+Ghana,Republic of Ghana,ghana,7.946527,-1.02319399999999,8
+Ecuador,República del Ecuador,ecuador,-1.831239,-78.18340599999999,9
+Guam,,guam,-26.115986,149.414063,3
+Israel,Israel,israel,31.44741,34.892578,61
+Pakistan,Islamic Republic of Pakistan,pakistan,30.297018,69.873047,27
+Cyprus,Republic of Cyprus,cyprus,35.126413,33.429859,18
+Oman,,oman,20.99700093034119,56.689453125,16
+Bahrain,Mamlakat al-Ba?rayn,bahrain,26.053986,50.548096,8
+Angola,Republic of Angola,angola,-11.202692,17.873887,8
+Panama,Panama,panama,8.754795,-79.980469,17
+Myanmar,Burma,myanmar,1.646929893097816,96.75893047,5
+Honduras,Republic of Honduras,honduras,14.7029462981211,-86.61578529062501,4
+Cambodia,Kingdom of Cambodia,cambodia,12.360035,105.270996,10
+Nepal,Federal Democratic Republic of Nepal,nepal,27.855914,84.418945,9
+Moldova,Republic of Moldova,moldova,46.904245,28.795166,6
+Iceland,Island,iceland,64.963051,-19.020835,13
+Kyrgyzstan,,kyrgyzstan,41.462686,74.5518688,3
+Paraguay,República del Paraguay,paraguay,-23.442503,-58.44383199999999,6
+Dominican Republic,,dominican-republic,18.735693,-70.16265099999998,3
+Malawi,,malawi,-13.213688,33.729589,1
+Papua New Guinea,,papua-new-guinea,-6.518169,144.3369819,1
+Djibouti,,djibouti,11.8251,42.5903,4
+Republic of the Congo,,republic-of-the-congo,-0.3016625,15.99825,1
+Croatia,Republika Hrvatska,croatia,45.305803,16.193848,16
+Qatar,Dawlat Qa?ar,qatar,25.354826,51.183884,11
+Luxembourg,Luxemburg,luxembourg,49.820265,6.080933,16
+Mauritius,Republic of Mauritius,mauritius,-20.260909,57.577972,10
+El Salvador,Republic of El Salvador,el-salvador,13.794185,-88.89653,3
+Malta,Malta,malta,35.914635,14.394836,10
+Morocco,al-Magribiyya,morocco,31.791702,-7.09262,12
+Isle of Man,Isle of Man,isle-of-man,54.217073,-4.54834,6
+Hungary,Hungary,hungary,47.435519,19.588623,19
+Vietnam,Socialist Republic of Vietnam,vietnam,14.058324,108.277199,36
+Bahamas,Commonwealth of the Bahamas,bahamas,25.03428,-77.39628,4
+Bosnia and Herzegovina,,bosnia-and-herzegovina,43.915886,17.67907600000001,4
+Reunion,,reunion,-21.115141,55.536384,5
+Iraq,,iraq,33.0472387,43.4091441,1
+Ivory Coast,Côte d'Ivoire,ivory-coast,7.5972059,-5.5695176,6
+Georgia,,georgia,42.04004612961171,44.208984375,4
+Jordan,Hashemite Kingdom of Jordan,jordan,31.444911,36.23291,8
+Belarus,Republic of Belarus,belarus,53.709807,27.953389,2
+Liechtenstein,Principality of Liechtenstein ,liechtenstein,47.166,9.555373,7
+New Caledonia,,new-caledonia,-20.904305,165.6180420000001,3
+Slovenia,Republika Slovenija,slovenia,46.103709,14.688721,21
+Venezuela,República Bolivariana de Venezuela,venezuela,6.42375,-66.58973,6
+Mongolia,,mongolia,46.8293023,103.0890283,7
+Kuwait,Persian Gulf,kuwait,29.300771,47.686157,5
+Albania,Republic of Albania,albania,41.153332,20.168331,4
+Tunisia,,tunisia,33.886917,9.537499000000025,4
+Rwanda,Republic of Rwanda,rwanda,-2.053880898959149,29.91074345479975,3
+Armenia,,armenia,40.6052115,44.7098284,2
+Lebanon,Lebanese Republic,lebanon,33.854721,35.862285,2
+Namibia,,namibia,-22.6024179,17.025394,2
+Suriname,,suriname,3.919305,-56.027783,2
+Mozambique,,mozambique,-18.665695,35.529562,6
+Ethiopia,,ethiopia,8.622436,39.6082549,5
+Uganda,,uganda,1.538539181657284,32.69591590170668,4
+Maldives,,maldives,3.180119,73.2141201,3
+Zambia,,zambia,-13.8870432,29.5853689,3
+Bhutan,,bhutan,27.3963605,90.4639079,2
+Burkina Faso,,burkina-faso,12.2823952,-1.7328958,1
+Guinea,,guinea,10.7797735,-11.0300404,1
+Palestine,State of Palestine,palestine,31.952162,35.233154,1
+Brunei,Brunei Darussalam,brunei,4.535277,114.727669,4
+French Guiana,Département de la Guyane,french-guiana,3.933889,-53.125782,1
+Gabon,,gabon,-0.6035815,11.7989539,1
+Mali,,mali,17.3503806,-1.246828,1
+Mayotte,,mayotte,-12.820728,45.1339031,1
+Martinique,,martinique,14.6649598,-61.020611,1
+Uruguay,Oriental Republic of Uruguay,uruguay,-32.522779,-55.765835,10
+Libya,Libyan Arab Jamahiriya,libya,27.561527,17.929688,6
+Laos,Lao PDR,laos,18.77304324526721,103.44167348125,2
+Iran,Iran,iran,31.689535,54.667969,20
+Gibraltar,Gibraltar,gibraltar,36.130924,-5.34811,6
+Azerbaijan,Az?rbaycan,azerbaijan,40.143105,47.576927,3
+Algeria,,algeria,28.033886,1.659626000000003,6
+Nicaragua,República de Nicaragua,nicaragua,12.865416,-85.20722899999998,3
+Jersey,Bailiwick of Jersey,jersey,49.214439,-2.13125,5
+Madagascar,,madagascar,-20.0113629,46.9374812,3
+Macau,,macau,22.16515016313018,113.5553741455078,1
+Sri Lanka,,sri-lanka,7.873054,80.771797,2
+Senegal,,senegal,14.4303084,-14.4530742,7
+Botswana,,botswana,-22.328474,24.684866,5
+Trinidad and Tobago,,trinidad-and-tobago,10.691803,-61.22250300000002,4
+Afghanistan,,afghanistan,33.93911,67.70995300000004,2
+Monaco,,monaco,43.7384,7.4246,3
+Cameroon,République du Cameroun,cameroon,7.369721999999999,12.354722,2
+Andorra,,andorra,42.5418518,1.5757107,3
+Curacao,Curaçao,curacao,12.16957,-68.99002,3
+Zimbabwe,Republic of Zimbabwe,zimbabwe,-19.0145618213067,29.68014575000007,3
+Bermuda,,bermuda,32.3078,-64.75049999999999,2
+Cayman Islands,,cayman-islands,19.3133,-81.25459999999998,2
+French Polynesia,Polynésie française,french-polynesia,-17.679742,-149.406843,2
+Greenland,Grønland,greenland,75.218713,-41.132813,2
+Togo,,togo,8.7532887,1.0296154,2
+Equatorial Guinea,,equatorial-guinea,1.6115655,10.5245571,1
+Eswatini,,eswatini,-26.5632756,31.4974921,1
+Jamaica,,jamaica,18.1559528,-77.3117665,1
+Kosovo,Republic of Kosovo,kosovo,42.6026359,20.90297699999996,1
+Solomon Islands,,solomon-islands,-8.9233321,159.6476322,1
+Sudan,,sudan,13.8260997,30.0440546,1
+Guernsey,Bailiwick of Guernsey,guernsey,49.45289,-2.576981,3
+Lesotho,,lesotho,-29.5817873,28.2455656,2
+Guyana,,guyana,5.6221001,-58.9745476,1
+Seychelles,,seychelles,-4.4612912,55.5933476,1
+Somalia,,somalia,5.8234137,47.3219541,1
+US Virgin Islands,Virgin Islands of the United States,us-virgin-islands,18.04664422528246,-64.87152099609375,1

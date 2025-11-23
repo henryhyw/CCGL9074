@@ -1,5 +1,5 @@
 import { d3 } from '../deps.js';
-import { createSVG, dur, dly, globalReveal } from '../core/utils.js';
+import { createSVG, dur, dly, globalReveal, showTip, hideTip } from '../core/utils.js';
 
 export function build(sel, props){
   const W=1200,H=700,M={t:30,r:30,b:74,l:84};
@@ -8,6 +8,9 @@ export function build(sel, props){
 
   const innerW=W-M.l-M.r, innerH=H-M.t-M.b;
   const pts = props.points;
+
+  const distFmt = props.distFmt || (v => Math.round(v));
+  const capFmt  = props.capFmt  || (v => (Math.abs(v) >= 10 ? v.toFixed(0) : v.toFixed(1)));
 
   const x=d3.scaleLinear().domain(props.xDomain || d3.extent(pts,d=>d.dist)).nice().range([0,innerW]);
   const y=d3.scaleLinear().domain(props.yDomain || [0,d3.max(pts,d=>d.cap)]).nice().range([innerH,0]);
@@ -32,11 +35,20 @@ export function build(sel, props){
   const slope=d3.sum(pts,d=>(d.dist-xbar)*(d.cap-ybar))/d3.sum(pts,d=>(d.dist-xbar)**2);
   const intercept=ybar - slope*xbar;
 
-  const reg=d3.line().x(d=>x(d)).y(d=>y(intercept+slope*d));
-  const domain=[x.domain()[0], x.domain()[1]];
-
-  const regPath=g.append('path').datum(domain)
-    .attr('d',reg)
+  // Regression line clamped to axes
+  const regLine=d3.line().x(d=>x(d.x)).y(d=>y(d.y));
+  const xDom = x.domain();
+  const yDom = y.domain();
+  const xExtent = props.regRange || d3.extent(pts, d=>d.dist);
+  const regPts = xExtent.map(xv => {
+    const yv = intercept + slope * xv;
+    return {
+      x: xv,
+      y: Math.min(Math.max(yv, yDom[0]), yDom[1])
+    };
+  });
+  const regPath=g.append('path').datum(regPts)
+    .attr('d',regLine)
     .attr('stroke','var(--danger)')
     .attr('stroke-width',2.2)
     .attr('fill','none');
@@ -54,4 +66,20 @@ export function build(sel, props){
       regPath.transition().duration(dur(2200)).ease(d3.easeCubicOut).attr('stroke-dashoffset',0);
     }
   });
+
+  // Tooltip on hover
+  svg.on('mousemove',(ev)=>{
+    const [mx,my]=d3.pointer(ev);
+    const nearest = d3.least(pts, d => Math.hypot(x(d.dist) - mx + M.l, y(d.cap) - my + M.t));
+    if (!nearest) return hideTip();
+    const px = x(nearest.dist) + M.l, py = y(nearest.cap) + M.t;
+    if (Math.hypot(px - mx, py - my) < 24){
+      const html = typeof props.tooltipFmt === 'function'
+        ? props.tooltipFmt(nearest)
+        : nearest.name
+          ? `<strong>${nearest.name}</strong><br/>${distFmt(nearest.dist)} · ${capFmt(nearest.cap)}`
+          : `${distFmt(nearest.dist)}, ${capFmt(nearest.cap)}`;
+      showTip(ev.pageX, ev.pageY, html);
+    } else { hideTip(); }
+  }).on('mouseleave', hideTip);
 }

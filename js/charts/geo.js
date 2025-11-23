@@ -4,6 +4,22 @@
 
 import { d3, topojson } from '../deps.js';
 import { createSVG, dur, showTip, hideTip, globalReveal } from '../core/utils.js';
+
+const fmtDefault = (v) => {
+  if (v == null || isNaN(v)) return '';
+  const abs = Math.abs(v);
+  if (abs >= 1e9) return (v/1e9).toFixed(1) + 'G';
+  if (abs >= 1e6) return (v/1e6).toFixed(1) + 'M';
+  if (abs >= 1e3) return (v/1e3).toFixed(1) + 'k';
+  if (abs >= 1) return Number(v).toFixed(0);
+  if (v === 0) return '0';
+  return v.toFixed(2);
+};
+
+const fmtPercent = (v) => {
+  if (v == null || isNaN(v)) return '';
+  return `${Math.round(v * 100)}%`;
+};
 import { useJSON } from '../core/geoWarm.js';
 
 /**
@@ -54,6 +70,7 @@ export async function build(sel, props = {}){
 
   const W = props.width ?? 1200, H = props.height ?? 720;
   const svg = createSVG(sel, W, H);
+  const defs = svg.append('defs');
   const root = svg.append('g'); // faded in globally
 
   // --- Projection & path ---
@@ -78,6 +95,8 @@ export async function build(sel, props = {}){
     .attr('stroke', bm.stateStroke ?? 'rgba(255,255,255,.12)')
     .attr('stroke-width', bm.stateStrokeWidth ?? 0.6);
 
+  let choroplethLegend = null;
+  let plumeLegend = null;
   // Optional choropleth
   if (bm.choropleth){
     const vMap = bm.choropleth.valueByName || {};
@@ -89,6 +108,7 @@ export async function build(sel, props = {}){
       const range = (bm.choropleth.color && bm.choropleth.color.range) || ['#1f2a44','#ef5d60'];
       const dom = (bm.choropleth.color && bm.choropleth.color.domain) || [0,1];
       color = d3.scaleLinear().domain(dom).range(range);
+      choroplethLegend = { scale: color, domain: dom, title: bm.choropleth.legend?.title, format: bm.choropleth.legend?.format };
     }
     // start filled at start color; animate to final
     states.attr('fill', color(0));
@@ -99,6 +119,7 @@ export async function build(sel, props = {}){
 
   // === Layers ===
   const layers = props.layers || {};
+  let bubbleLegend = null;
 
   // ---- BUBBLES ----
   if (layers.bubbles && Array.isArray(layers.bubbles.data)){
@@ -143,6 +164,10 @@ export async function build(sel, props = {}){
         circles.transition().duration(dur(L.anim?.growMs ?? 1400)).ease(d3.easeCubicOut)
           .attr('r', d => r(d[rK]));
       };
+    }
+
+    if (L.legend && Array.isArray(L.legend.values)){
+      bubbleLegend = { values: L.legend.values, scale: r, title: L.legend.title };
     }
 
     // Tooltip (optional)
@@ -311,42 +336,59 @@ export async function build(sel, props = {}){
   // ---- PLUMES ----
   if (layers.plumes){
     const P = layers.plumes;
+    const valKey = P.valueKey || 'value';
+    const vals = (P.sites||[]).map(s => + (s[valKey] ?? s.footprint ?? s.disp ?? 0));
+    const maxVal = d3.max(vals) || 1;
+    const minR = P.minR ?? 24, maxR = P.maxR ?? 90;
+    const valScale = v => Math.max(0, (v ?? 0) / maxVal);
+    let colorScale = P.colorScale;
+    if (!colorScale){
+      if (Array.isArray(P.colorRange) && P.colorRange.length>=2){
+        colorScale = d3.scaleLinear().domain([0,maxVal]).range(P.colorRange);
+      }else{
+        colorScale = v => d3.interpolateInferno(valScale(v));
+      }
+    }
+    plumeLegend = { min: 0, max: maxVal, title: P.legend?.title, format: P.legend?.format, scale: colorScale };
+
     const defs = svg.append('defs');
     const siteData = (P.sites||[]).map((s,i) => {
       const id=`rg${Math.random().toString(36).slice(2)}${i}`;
       const grad=defs.append('radialGradient').attr('id',id);
       const stops = P.stops || [
-        {offset:'0%', color:'rgba(255,255,255,.9)'},
+        {offset:'0%', color:'rgba(255,255,255,.55)'},
+        {offset:'60%', color:'rgba(255,255,255,0.16)'},
         {offset:'100%', color:'rgba(255,255,255,0)'}
       ];
       stops.forEach(st => grad.append('stop').attr('offset',st.offset).attr('stop-color',st.color));
 
       const p = projection([s.lon, s.lat]);
-      const rFinal = 40 + s.disp*60;
+      const val = s[valKey] ?? s.footprint ?? s.disp ?? 0;
+      const rFinal = minR + valScale(val) * (maxR - minR);
       const rInit = Math.max(10, rFinal * 0.55);
 
       const circle = root.append('circle')
         .attr('cx', p[0]).attr('cy', p[1])
         .attr('r', rInit)
         .attr('fill', `url(#${id})`)
-        .attr('stroke', (typeof P.stroke === 'function' ? P.stroke(s) : (P.stroke ?? d3.interpolatePlasma(s.ej*.8))))
-        .attr('stroke-opacity', .5)
+        .attr('stroke', (typeof P.stroke === 'function' ? P.stroke(s) : (P.stroke ?? colorScale(val))))
+        .attr('stroke-opacity', .35)
         .attr('stroke-dasharray', '6 8')
-        .attr('stroke-width', 1.5)
+        .attr('stroke-width', 1.2)
         .attr('stroke-dashoffset', 20);
 
-      if (s.name){
-        const label = root.append('text')
+      let label = null;
+      if (P.label?.show){
+        const txt = (typeof P.label.text === 'function') ? P.label.text(s) : (P.label?.text || s.name);
+        label = root.append('text')
           .attr('x', p[0] + rInit/2 + 6)
           .attr('y', p[1] - rInit/2 - 6)
-          .attr('fill','var(--ink)')
-          .attr('font-size','var(--fs-geoLabel, 13px)')
-          .attr('font-weight',600)
-          .text(`${s.name} · EJ ${Math.round(s.ej*100)}pctl`);
-        return { circle, label, rFinal, cx:p[0], cy:p[1] };
-      }else{
-        return { circle, rFinal, cx:p[0], cy:p[1] };
+          .attr('fill', P.label.color || 'var(--ink)')
+          .attr('font-size', P.label.fontSize || 'var(--fs-geoLabel, 13px)')
+          .attr('font-weight', P.label.weight || 600)
+          .text(txt ?? '');
       }
+      return { circle, label, rFinal, cx:p[0], cy:p[1] };
     });
 
     root.node().__animatePlumes = () => {
@@ -395,6 +437,102 @@ export async function build(sel, props = {}){
       if (!document.hidden) startMotion();
     });
     root.node().__startRings = startMotion;
+  }
+
+  // Legends
+  const legendG = svg.append('g').attr('class','geo-legend');
+
+  // Choropleth legend
+  if (choroplethLegend){
+    const { scale, domain, title, format } = choroplethLegend;
+    const tickFmt = format === 'percent' ? fmtPercent : fmtDefault;
+    const gradId = `grad-${Math.random().toString(36).slice(2,7)}`;
+    const grad = defs.append('linearGradient').attr('id', gradId).attr('x1','0%').attr('x2','100%').attr('y1','0%').attr('y2','0%');
+    const steps = 6;
+    const d0 = domain[0], d1 = domain[domain.length-1];
+    for(let i=0;i<=steps;i++){
+      const t=i/steps;
+      const v=d0 + (d1-d0)*t;
+      grad.append('stop').attr('offset',`${t*100}%`).attr('stop-color', scale(v));
+    }
+    const legendWidth = 220, legendHeight = 12;
+    const baseX = 24, baseY = H - 56;
+    legendG.append('rect')
+      .attr('x', baseX).attr('y', baseY)
+      .attr('width', legendWidth).attr('height', legendHeight)
+      .attr('fill', `url(#${gradId})`)
+      .attr('stroke','rgba(255,255,255,0.2)');
+    const axisScale = d3.scaleLinear().domain([d0,d1]).range([baseX, baseX+legendWidth]);
+    const axis = d3.axisBottom(axisScale).ticks(4).tickSize(0).tickFormat(tickFmt);
+    const axisG = legendG.append('g').attr('transform', `translate(0,${baseY + legendHeight})`).call(axis);
+    axisG.selectAll('text').attr('fill','var(--muted)').attr('font-size','11px');
+    axisG.selectAll('path,line').remove();
+    legendG.append('text')
+      .attr('x', baseX)
+      .attr('y', baseY - 6)
+      .attr('fill','var(--muted)')
+      .attr('font-size','12px')
+      .text(title || 'Choropleth');
+  }
+
+  // Bubble legend
+  if (bubbleLegend){
+    const { values, scale, title } = bubbleLegend;
+    const baseX = W - 160, baseY = H - 30;
+    const g = legendG.append('g').attr('class','bubble-legend').attr('transform', `translate(${baseX},${baseY})`);
+    g.append('text')
+      .attr('x', 0).attr('y', -scale(values[values.length-1]) - 28)
+      .attr('fill','var(--muted)').attr('font-size','12px').text(title || 'Bubble size');
+    values.slice().sort((a,b)=>b-a).forEach((v,i)=>{
+      const r = scale(v);
+      const cy = -r*2 - i*10;
+      g.append('circle')
+        .attr('cx', 0)
+        .attr('cy', cy)
+        .attr('r', r)
+        .attr('fill','none')
+        .attr('stroke','var(--muted)')
+        .attr('stroke-width',1);
+      g.append('text')
+        .attr('x', r + 10)
+        .attr('y', cy)
+        .attr('dominant-baseline','middle')
+        .attr('fill','var(--muted)')
+        .attr('font-size','12px')
+        .text(fmtDefault(v));
+    });
+  }
+
+  // Plume legend
+  if (plumeLegend){
+    const { min, max, title, scale, format } = plumeLegend;
+    const tickFmt = format === 'percent' ? fmtPercent : fmtDefault;
+    const gradId = `plume-${Math.random().toString(36).slice(2,7)}`;
+    const grad = defs.append('linearGradient').attr('id', gradId).attr('x1','0%').attr('x2','100%').attr('y1','0%').attr('y2','0%');
+    const steps = 6;
+    for(let i=0;i<=steps;i++){
+      const t=i/steps;
+      const v=min + (max-min)*t;
+      grad.append('stop').attr('offset',`${t*100}%`).attr('stop-color', scale(v));
+    }
+    const legendWidth = 200, legendHeight = 10;
+    const baseX = W - legendWidth - 160, baseY = H - 56;
+    legendG.append('rect')
+      .attr('x', baseX).attr('y', baseY)
+      .attr('width', legendWidth).attr('height', legendHeight)
+      .attr('fill', `url(#${gradId})`)
+      .attr('stroke','rgba(255,255,255,0.2)');
+    const axisScale = d3.scaleLinear().domain([min,max]).range([baseX, baseX+legendWidth]);
+    const axis = d3.axisBottom(axisScale).ticks(4).tickSize(0).tickFormat(tickFmt);
+    const axisG = legendG.append('g').attr('transform', `translate(0,${baseY + legendHeight})`).call(axis);
+    axisG.selectAll('text').attr('fill','var(--muted)').attr('font-size','11px');
+    axisG.selectAll('path,line').remove();
+    legendG.append('text')
+      .attr('x', baseX)
+      .attr('y', baseY - 6)
+      .attr('fill','var(--muted)')
+      .attr('font-size','12px')
+      .text(title || 'Plume intensity');
   }
 
   // tail of js/charts/geo.js (replaced)

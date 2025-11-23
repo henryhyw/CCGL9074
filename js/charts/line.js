@@ -202,4 +202,27 @@ export function build(sel, props = {}){
         });
     });
   });
+
+  // Simple legend under the chart (optional)
+  if (props.legend !== false){
+    const legendG = svg.append('g').attr('class','line-legend');
+    const items = series.map(s => ({
+      id: s.id,
+      color: s.styles?.stroke || 'var(--accent)'
+    }));
+    const entryH = 18;
+    legendG.selectAll('g.item').data(items).join('g')
+      .attr('class','item')
+      .attr('transform',(d,i)=>`translate(${M.l},${H - M.b + 18 + i*entryH})`)
+      .each(function(d){
+        const row = d3.select(this);
+        row.append('rect').attr('width',18).attr('height',6).attr('y',-7).attr('fill', d.color);
+        row.append('text')
+          .attr('x',26).attr('y',0)
+          .attr('fill','var(--muted)')
+          .attr('font-size','12px')
+          .attr('dominant-baseline','middle')
+          .text(d.id);
+      });
+  }
 }

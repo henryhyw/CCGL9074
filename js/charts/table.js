@@ -4,6 +4,9 @@ import { dur, globalReveal } from '../core/utils.js';
 export function build(sel, props){
   const wrap = document.querySelector(sel);
   wrap.innerHTML = '';
+  wrap.style.overflowY = 'auto';
+  wrap.style.maxHeight = wrap.style.maxHeight || '100%';
+  wrap.tabIndex = 0; // allow keyboard scrolling if needed
 
   const table = document.createElement('table');
   const thead = document.createElement('thead');
@@ -30,6 +33,16 @@ export function build(sel, props){
     tr.style.opacity=0; tr.style.transform='translateY(6px)';
     tbody.appendChild(tr);
     rowsEls.push(tr);
+  });
+
+  // Size the wrapper so full tables show when possible; otherwise enable scroll
+  requestAnimationFrame(()=>{
+    const avail = Math.max(200, window.innerHeight - 140); // leave space for label/caption
+    const needed = table.scrollHeight + 12;
+    wrap.style.maxHeight = `${avail}px`;
+    wrap.style.height = `${Math.min(needed, avail)}px`;
+    wrap.style.overflowY = needed > avail ? 'auto' : 'visible';
+    console.debug('[TABLE SIZE]', { avail, needed, height: wrap.style.height });
   });
 
   // Fade in the whole table, then stagger rows

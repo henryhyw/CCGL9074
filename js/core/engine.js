@@ -106,6 +106,11 @@ function applyLayout(slide){
     return;
   }
 
+  if (primaryFigure && !textFigures.length){
+    LAYOUTS.figureOnly(slide.id, { figSel: primaryFigure.figSel });
+    return;
+  }
+
   if (primaryFigure){
     LAYOUTS.panel(slide.id, {
       figSel: primaryFigure.figSel,
@@ -166,16 +171,6 @@ function buildSlide(slide){
   if (!textFigures.length){
     const sec = document.getElementById(slide.id);
     if (sec) sec.classList.add('fx-on');
-  }
-
-  // Cards slide: reveal three cards (unchanged)
-  if (slide.id === 'scene-cards'){
-    setTimeout(()=>{
-      ['card-gains','card-costs','card-fix'].forEach((cid)=>{
-        const el = document.getElementById(cid);
-        if(el){ el.classList.add('show'); }
-      });
-    }, 150);
   }
 }
 

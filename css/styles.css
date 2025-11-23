@@ -110,7 +110,8 @@ a:hover{text-decoration:underline}
 /* Tables */
 .table-cards{
   position:absolute;left:50%;transform:translateX(-50%);width:min(1100px,92vw);
-  background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:auto;
+  background:var(--panel);border:1px solid var(--border);border-radius:16px;
+  overflow:auto; box-sizing:border-box; padding:6px 0;
   box-shadow:0 10px 30px rgba(0,0,0,.25);backdrop-filter:blur(8px)
 }
 table{width:100%;border-collapse:collapse}
@@ -291,4 +292,3 @@ svg{display:block;background:transparent}
 
 /* color anim is handled by JS setting style.color on reveal; ensure it can animate */
 .fx-color { transition: color 600ms cubic-bezier(.2,.7,.2,1); }
-
