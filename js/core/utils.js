@@ -36,15 +36,22 @@ export function globalReveal({ container, fadeSel, fadeMs=600, ease=d3.easeCubic
   const root = (typeof container === 'string') ? document.querySelector(container) : container;
   const sceneEl = root?.closest('.scene');
 
+  // Normalize fadeSel: accept a DOM node or an existing d3 selection
+  let fadeSelection = null;
+  if (fadeSel){
+    const looksLikeSelection = typeof fadeSel.style === 'function' && typeof fadeSel.transition === 'function';
+    fadeSelection = looksLikeSelection ? fadeSel : d3.select(fadeSel);
+  }
+
   // ensure starting state
-  if (fadeSel) fadeSel.style('opacity', 0);
+  if (fadeSelection) fadeSelection.style('opacity', 0);
 
   // flip chrome ON immediately so label/caption animate with text
   if (sceneEl) sceneEl.classList.add('fx-on');
 
   // kick the fade
-  if (fadeSel) {
-    fadeSel
+  if (fadeSelection) {
+    fadeSelection
       .transition()
       .duration(fadeMs)
       .ease(ease)

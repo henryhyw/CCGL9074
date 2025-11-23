@@ -58,6 +58,11 @@ const estTrend = [
   { x:2020, y:30112 }, { x:2021, y:37164 }, { x:2022, y:46696 }, { x:2023, y:52770 }, { x:2024, y:55259 }
 ];
 
+const empTrend = [
+  { x:2015, y:296699 }, { x:2016, y:301209 }, { x:2017, y:313349 }, { x:2018, y:333499 }, { x:2019, y:344062 },
+  { x:2020, y:361636 }, { x:2021, y:388804 }, { x:2022, y:467131 }, { x:2023, y:486212 }, { x:2024, y:483805 }
+];
+
 const priceTrendUS = [
   { x:2015, y:13.22 }, { x:2016, y:13.17 }, { x:2017, y:13.52 }, { x:2018, y:13.62 }, { x:2019, y:13.75 },
   { x:2020, y:13.80 }, { x:2021, y:14.23 }, { x:2022, y:15.63 }, { x:2023, y:16.68 }, { x:2024, y:17.05 }
@@ -91,6 +96,14 @@ const aiSeries = {
     { x:2028, y:50 }, { x:2029, y:56 }, { x:2030, y:64 }
   ]
 };
+
+const capacitySeries = [
+  { x:2005, y:21.4 }, { x:2006, y:23.8 }, { x:2007, y:24.8 }, { x:2008, y:25.9 }, { x:2009, y:26.9 },
+  { x:2010, y:28.0 }, { x:2011, y:29.0 }, { x:2012, y:29.7 }, { x:2013, y:30.5 }, { x:2014, y:31.3 },
+  { x:2015, y:32.9 }, { x:2016, y:35.3 }, { x:2017, y:38.1 }, { x:2018, y:43.5 }, { x:2019, y:51.6 },
+  { x:2020, y:59.7 }, { x:2021, y:66.9 }, { x:2022, y:74.1 }, { x:2023, y:83.2 }, { x:2024, y:97.1 },
+  { x:2025, y:114.3 }
+];
 
 const buildTimelineItems = [
   { name:'Data center shell + fit-out', max:18, color:'var(--brand)' },
@@ -302,6 +315,34 @@ const deck = {
         }
       }]
     },
+    {
+      id:'scene-global-capacity', group:'group-1', nav:'Global capacity',
+      label:'Global DC capacity (GW)',
+      figures:[
+        {
+          type:'text',
+          figSel:'#global-capacity-text',
+          props:{
+            kicker:'Global arc',
+            title:'From 21 GW to __114 GW__',
+            subtitle:'Capacity accelerates after 2018: 51.6 GW (2019) → 97.1 GW (2024) → 114.3 GW (2025e). Sets the backdrop for the US boom.',
+            align:'center', halign:'center',
+            sizes:{ title:'xs', subtitle:'xs', body:'xs' }
+          }
+        },
+        {
+          type:'line',
+          figSel:'#global-capacity-line',
+          props:{
+            series:[{ id:'Installed capacity (GW)', data: capacitySeries, styles:{ stroke:'var(--accent)', strokeWidth:3 }, marker:{ show:true, r:4, fill:'var(--accent)' } }],
+            axes:{ xTicks:8, yTicks:6, grid:true, xFormat:d3formatYear, yFormat:v=> v.toFixed(1), xLabel:'Year', yLabel:'Installed capacity (GW)' },
+            curve:'MonotoneX',
+            graphOpacity:1
+          }
+        }
+      ],
+      caption:'Source: Visual Capitalist (2024) “Charted: The Growth of Global Data Center Capacity, 2005–2025.”'
+    },
 
     // Section 1: Overall growth
     {
@@ -331,11 +372,11 @@ const deck = {
           }
         }
       ],
-      caption:'Source: DataCenterMap.com (global data center counts by country, accessed 2024).'
+      caption:'Source: DataCenterMap.com (global data center counts by country).'
     },
     {
       id:'scene-us-share-text', group:'group-1', nav:'US share text',
-      caption:'Source: DataCenterMap.com (global and US counts, accessed 2024).',
+      caption:'Source: DataCenterMap.com (global and US counts).',
       figures:[{
         type:'text',
         figSel:'#us-share-text',
@@ -384,7 +425,7 @@ const deck = {
           }
         }
       ],
-      caption:'Source: DataCenterMap.com (US state counts, accessed 2024).'
+      caption:'Source: DataCenterMap.com (US state counts).'
     },
     {
       id:'scene-est-trend', group:'group-1', nav:'Growth trend',
@@ -415,34 +456,68 @@ const deck = {
       ],
       caption:'Source: US Bureau of Labor Statistics (NAICS 518210 establishments, 2015–2024).'
     },
+    // {
+    //   id:'scene-emp-trend', group:'group-1', nav:'Jobs trend',
+    //   label:'US establishments and jobs',
+    //   figures:[
+    //     {
+    //       type:'text',
+    //       figSel:'#emp-trend-text',
+    //       props:{
+    //         kicker:'Jobs rise with sites',
+    //         title:'Growth adds headcount alongside sites',
+    //         subtitle:'Establishments 17,799 → 55,259; employment ~297k → ~484k. Headcount peaks in 2023, holding high through 2024.',
+    //         align:'center', halign:'center',
+    //         sizes:{ title:'sm', subtitle:'xs', body:'xs' }
+    //       }
+    //     },
+    //     {
+    //       type:'line',
+    //       figSel:'#emp-trend-line',
+    //       props:{
+    //         series:[
+    //           { id:'Establishments', data: estTrend, styles:{ stroke:'var(--brand)', strokeWidth:3 }, marker:{ show:false } },
+    //           { id:'Employment', data: empTrend, styles:{ stroke:'var(--accent)', strokeWidth:3 }, marker:{ show:false } }
+    //         ],
+    //         axes:{ xTicks:6, yTicks:6, grid:true, xFormat:d3formatYear, yFormat:d3formatDefault, xLabel:'Year', yLabel:'Count (estabs/jobs)' },
+    //         curve:'MonotoneX',
+    //         legend:true,
+    //         graphOpacity:1
+    //       }
+    //     }
+    //   ],
+    //   caption:'Source: US Bureau of Labor Statistics (NAICS 518210 establishments and average employment, 2015–2024).'
+    // },
     {
-      id:'scene-growth-leaders', group:'group-1', nav:'Top growth states',
-      label:'Fastest-growing states',
-      layout:{ textFrac:0.22, gapFrac:0.05 },
+      id:'scene-ashburn-video', group:'group-1', nav:'Ashburn video',
+      label:'Ashburn, VA timelapse',
       figures:[
         {
           type:'text',
-          figSel:'#growth-leaders-text',
+          figSel:'#ashburn-video-text',
           props:{
-            kicker:'Where growth is hottest',
-            title:'Smaller states led percentage growth',
-            subtitle:'Alabama **+984%**, Connecticut **+915%**, DC **+677%**—growth is spreading inland, not just coasts.',
+            kicker:'See the ground change',
+            title:'Virginia’s build-out over 25 years',
+            subtitle:'Satellite timelapse of Ashburn, VA (2000–2025),</br>the heart of a 15.8% share of all US data centers.',
             align:'center', halign:'center',
             sizes:{ title:'xs', subtitle:'xs', body:'xs' }
           }
         },
         {
-          type:'table',
-          figSel:'#growth-leaders-table',
+          type:'video',
+          figSel:'#ashburn-video-fig',
           props:{
-            columns:[{key:'state',title:'State'},{key:'start',title:'2015'},{key:'end',title:'2024'},{key:'growth',title:'Growth'}],
-            rows: growthLeaderRows,
-            staggerMs: 160,
+            src:'media/Ashburn Virginia.mp4',
+            muted:true,
+            loop:true,
+            autoplay:true,
+            controls:false,
+            style:{ objectFit:'contain' },
             graphOpacity:1
           }
         }
       ],
-      caption:'Source: US Bureau of Labor Statistics (NAICS 518210 establishments, 2015–2024).'
+      caption:'Source: Satellite timelapse, Ashburn, Virginia, 2000–2025.'
     },
     {
       id:'scene-growth-question', group:'group-1', nav:'Why growing?',
@@ -592,7 +667,7 @@ const deck = {
         props:{
           kicker:'Challenge',
           title:'Power-on date now depends on **grid queue + hookups**',
-          subtitle:'Do we have enough electricity where we need it? Long interconnection queues and permits—not construction speed—often decide when sites switch on.',
+          subtitle:'Do we have enough electricity where we need it? Long interconnection queues and permits often set the energization date more than construction speed.',
           align:'center', halign:'center',
           sizes:{ title:'sm', subtitle:'sm', body:'sm' }
         }
@@ -723,7 +798,7 @@ const deck = {
         props:{
           kicker:'Beyond electricity',
           title:'From grid strain to [glow]water strain[/glow]',
-          subtitle:'High-load hubs are often in arid basins; ~40% of US data centers already sit in high-stress areas.',
+          subtitle:'High-load hubs are often in arid basins; ~40% of US data centers already sit in high-stress areas. Next we look at how cooling fits into that picture.',
           align:'center', halign:'center',
           sizes:{ title:'sm', subtitle:'sm', body:'sm' }
         }

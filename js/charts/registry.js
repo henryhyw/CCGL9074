@@ -17,6 +17,7 @@ import { build as Scatter } from './scatter.js';
 import { build as Text } from './text.js';
 import { build as Cards } from './cards.js';
 import { build as Credits } from './credits.js';
+import { build as Video } from './video.js';
 
 // Canonical registrations
 register('geo', Geo);
@@ -32,6 +33,7 @@ register('scatter', Scatter);
 register('text', Text);
 register('cards', Cards);
 register('credits', Credits);
+register('video', Video);
 
 // Backward-compatibility aliases for geo variants
 register('map', Geo);
