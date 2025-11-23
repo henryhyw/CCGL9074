@@ -451,7 +451,7 @@ const deck = {
         figSel:'#growth-question',
         props:{
           kicker:'Driver',
-          title:'What is driving this acceleration?',
+          title:'What is __driving__ this acceleration?',
           subtitle:'Hyperscale cloud, edge buildout, and a swing toward ==AI workloads== push more sites, faster; BI notes hyperscalers are nearly 4× more numerous than in 2010.',
           align:'center', halign:'center',
           sizes:{ title:'sm', subtitle:'sm', body:'sm' }
@@ -499,7 +499,7 @@ const deck = {
         figSel:'#electricity-intro',
           props:{
             kicker:'Load concentration',
-            title:'Clusters hit local grids first',
+            title:'Clusters hit [rise]local grids[/rise] first',
             subtitle:'IEA pegs US data centers at ~__183 TWh__ in 2024 (~45% of global DC use, >4% of US load) with a projected **+133%** to 426 TWh by 2030. We trace where that lands in state power shares and prices.',
           align:'center', halign:'center',
           sizes:{ title:'sm', subtitle:'sm', body:'sm' }
