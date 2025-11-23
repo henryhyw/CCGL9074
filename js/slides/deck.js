@@ -281,7 +281,7 @@ const deck = {
         figSel:'#cover-box',
         props:{
           kicker:'CCGL9074 · Group 8',
-          title:'US Data Center Boom<br/>&<br/>Its Urban Impact',
+          title:'US Data Center Boom<br/>and<br/>Its **Urban Impact**',
           subtitle:'More than two new US sites a week—what that means for power, prices, water, and communities',
           align:'center', halign:'center',
           sizes:{ title:'lg', subtitle:'md', body:'sm' }
@@ -547,7 +547,7 @@ const deck = {
         figSel:'#electricity-text',
         props:{
           kicker:'Load concentration',
-          title:'DC electricity share is climbing in key states',
+          title:'DC electricity share is [rise]climbing[/rise] in key states',
           subtitle:'Virginia **25.6%**; Nebraska/Iowa/Oregon/Wyoming ~**11%**; Nevada 8.7%; Utah 7.7%; Arizona 7.4%. These hubs feel rising load most quickly—and still need interconnection approvals.',
           align:'center', halign:'center',
           sizes:{ title:'sm', subtitle:'sm', body:'sm' }
@@ -722,7 +722,7 @@ const deck = {
         figSel:'#power-to-water-text',
         props:{
           kicker:'Beyond electricity',
-          title:'From grid strain to water strain',
+          title:'From grid strain to [glow]water strain[/glow]',
           subtitle:'High-load hubs are often in arid basins; ~40% of US data centers already sit in high-stress areas.',
           align:'center', halign:'center',
           sizes:{ title:'sm', subtitle:'sm', body:'sm' }
@@ -794,7 +794,7 @@ const deck = {
           figSel:'#water-footprint-text',
           props:{
             kicker:'Per-unit draw',
-            title:'Highest water footprints cluster west',
+            title:'Highest water footprints <br> cluster west',
             subtitle:'Nevada (20.5), Utah (20.2), California (19.6), Arizona (19.1), New Mexico (13.7), Washington (8.5).',
             align:'center', halign:'center',
             sizes:{ title:'xs', subtitle:'xs', body:'xs' }
@@ -966,7 +966,7 @@ const deck = {
     },
     {
       id:'scene-credits', group:'group-4', nav:'Credits',
-      label:'Data sources',
+      label:'',
       figures:[{
         type:'credits',
         figSel:'#credits-fig',
